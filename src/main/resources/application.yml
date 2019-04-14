@@ -1,0 +1,44 @@
+# server :
+server:
+  port: 80
+
+# spring :
+spring:
+  # jackson
+  jackson:
+    date-format : yyyy-MM-dd
+    time-zone : GMT+8
+    serialization :
+      write-dates-a s-timestamps : false
+  # load others setting files
+  profiles:
+    active: develpment
+    include: druid, test
+  # http encoding
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  # overriding name
+  main:
+    allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      max-file-size: 128MB
+      max-request-size: 128MB
+      enabled: true
+
+
+# mybatis
+mybatis.configuration.mapUnderscoreToCamelCase: true
+
+# logger
+#   file location and logging level
+logging :
+  level :
+    root : WARN
+    tech.loucianus.im: TRACE
+    org.springframework: WARN
+  path: target/server.log
+

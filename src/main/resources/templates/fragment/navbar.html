@@ -1,0 +1,232 @@
+<!-- navbar -->
+<nav th:fragment="nav" class="navbar navbar-expand-lg navbar-light bg-light rounded" xmlns:th="http://www.thymeleaf.org">
+    <a class="navbar-brand" th:href="@{/index}">Web Chat</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav mr-auto">
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="dropdownView" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">View</a>
+                <div class="dropdown-menu" aria-labelledby="dropdownView">
+                    <a id="view-bulletin-btn" class="dropdown-item" href="#" data-toggle="modal" data-target="#view-bulletin" onclick="viewBulletin()">View Bulletin</a>
+                    <div class="dropdown-divider"></div>
+                    <a id="view-task-btn" class="dropdown-item" href="#" data-toggle="modal" data-target="#view-task">Submit Task</a>
+                    <div class="dropdown-divider"></div>
+                    <a id="view-file-btn" class="dropdown-item" href="#" data-toggle="modal" data-target="#view-file" onclick="viewFile()">Download File</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="dropdownEdict" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Edict</a>
+                <div class="dropdown-menu" aria-labelledby="dropdownEdict">
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-bulletin">Push Bulletin</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-file">Upload File</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-task">Push Task</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-worker">Edict worker</a>
+                </div>
+            </li>
+
+        </ul>
+
+    </div>
+
+    <!-- View Worker Info Modal -->
+    <div class="modal fade" id="view-worker" tabindex="-1" role="dialog" aria-labelledby="view-worker-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="view-worker-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group list-group-flush">
+                        <li id="chat-user-model-name" class="list-group-item"></li>
+                        <li id="chat-user-model-Age" class="list-group-item"></li>
+                        <li id="chat-user-model-email" class="list-group-item"></li>
+                        <li id="chat-user-model-role" class="list-group-item"></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Download File Modal OK -->
+    <div class="modal fade" id="view-file" tabindex="-1" role="dialog" aria-labelledby="fileModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fileModalLongTitle">File List</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group">
+
+                        <div id="file-list">
+                            <!-- File List-->
+                        </div>
+                        <nav aria-label="file navigation">
+                            <ul id="file-nav" class="pagination justify-content-center"></ul>
+                        </nav>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload File Modal -->
+    <div class="modal fade" id="edict-file" tabindex="-1" role="dialog" aria-labelledby="edict-file-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="edict-file-title">File List</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="upload-file-from" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <input id="upload-file-id" name="upload-file-id" type="file" class="form-control-file">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" onclick="uploadFile()">Upload</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Bulletin Modal |ok| -->
+    <div class="modal fade bd-example-modal-lg" id="view-bulletin" tabindex="-1" role="dialog" aria-labelledby="bulletinModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5  class="modal-title" id="view-bulletin-title">Bulletin</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="jumbotron">
+
+                        <div class="lead" id="view-bulletin-details">
+                            <!-- Bulletin -->
+                        </div>
+                        <hr class="my-4">
+                        <p >Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;<label id="view-bulletin-date" class="lead"></label></p>
+                        <p >Manager&nbsp;&nbsp;:&nbsp;&nbsp;<label id="view-bulletin-publisher" class="lead"></label></p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Publish Bulletin Modal -->
+    <div class="modal fade bd-example-modal-lg" id="edict-bulletin" tabindex="-1" role="dialog" aria-labelledby="edict-bulletin-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bulletin</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Title&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        </div>
+                        <label for="edict-bulletin-title"></label>
+                        <input type="text" class="form-control" id="edict-bulletin-title" aria-describedby="basic-addon3">
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Bulletin</span>
+                        </div>
+                        <textarea id="edict-bulletin-details" class="form-control" aria-label="With textarea" style="min-height: 400px"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button id="edict-bulletin-save" type="button" class="btn btn-primary" onclick="publishBulletinDetails()">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Task Modal -->
+    <div class="modal fade" id="view-task" tabindex="-1" role="dialog" aria-labelledby="fileModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="taskModalLongTitle">Task</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group">
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Publish Task Modal -->
+    <div class="modal fade" id="edict-task" tabindex="-1" role="dialog" aria-labelledby="edict-task-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="edict-task-title">Task</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group">
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add or Delete Worker Modal -->
+    <div class="modal fade" id="edict-worker" tabindex="-1" role="dialog" aria-labelledby="edict-worker-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="edict-worker-title">Worker</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group">
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

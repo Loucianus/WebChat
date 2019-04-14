@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Smart IM</title>
+    <!--Bootstrap-->
+    <link rel="icon" type="image/png" href="../static/favicon.png">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <!--Token-->
+    <script th:src="@{/static/js/token.js}"></script>
+    <link rel="stylesheet" th:href="@{/static/css/signin.css}">
+</head>
+<body >
+    <main role="main" class="container">
+        <div class="form-signin text-center">
+            <h1 class="h3 mb-3 font-weight-normal">Please Sign in</h1>
+
+            <div class="form-group">
+                <label for="accountHelpBlock" class="sr-only control-label">Message of failing to login </label>
+                <span class="form-text text-muted" id="accountHelpBlock" style="display: none" >Account Error！</span>
+            </div>
+
+            <label for="InputEmail" class="sr-only">Email address</label>
+            <input type="email" id="InputEmail" class="form-control" placeholder="Email address" required="" autofocus="" oninput="bindUsername()">
+            <span class="form-text text-muted" id="usernameHelpBlock" style="display: none">Not Email Format</span>
+
+            <label for="InputPassword" class="sr-only">Password</label>
+            <input type="password" id="InputPassword" class="form-control" placeholder="Password" required="" oninput="bindPassword()">
+            <span class="form-text text-muted" id="passwordHelpBlock" style="display: none">Length Between 8 And 20</span>
+
+            <div class="checkbox mb-3">
+                <label>
+                    <input type="checkbox" value="remember-me"> Remember me
+                </label>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit" onclick="submitFormLogin()">Sign in</button>
+        </div>
+
+        <div th:replace="fragment/footer :: footer"></div>
+    </main>
+
+</body>
+</html>

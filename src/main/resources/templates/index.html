@@ -1,0 +1,101 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Web Chat</title>
+    <link rel="icon" type="image/png" href="../static/favicon.png">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/chat-reset.min.css">
+    <link rel="stylesheet" href="../static/css/chat-style.css">
+    <script th:src="@{/static/js/ws/sockjs.min.js}"></script>
+    <script th:src="@{/static/js/ws/stomp.js}"></script>
+    <script th:src="@{/static/js/app.js}"></script>
+    <script th:src="@{/static/js/marked.js}"></script>
+</head>
+<body>
+    <div class="container">
+        <div th:replace="fragment/navbar :: nav"></div>
+        <!-- navbar end -->
+        <div class="wrapper">
+            <div class="chat-container">
+                <!--        左侧联系人展示-->
+                <div class="left">
+                    <!--            搜索框-->
+                    <div class="top">
+<!--                        <label>-->
+<!--                            <input type="text" placeholder="Search" />-->
+<!--                        </label>-->
+                        <form class=" form-inline my-2 my-md-0 nav-item dropdown">
+
+                            <img id="u-pic" th:src="${worker.portrait}" src="" alt="..." class="rounded-circle " style="width: 40px; height: 40px;">
+                            &nbsp;&nbsp;&nbsp;<a class="dropdown-toggle" href="#" id="dropdownInfo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text="${worker.name}"></a>
+
+                            <div class="dropdown-menu" aria-labelledby="dropdownInfo" th:switch="${worker.gender}">
+                                <div id="worker-uid" style="display: none;" th:text="${worker.id}"></div>
+
+                                <a id="worker-name" class="dropdown-item" href="#"  th:text="'Name&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;' + ${worker.name}">Name:</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" th:case="'f'">Gender&nbsp;:&nbsp;&nbsp;Female</a>
+                                <a class="dropdown-item" href="#" th:case="'m'">Gender&nbsp;:&nbsp;&nbsp;Male</a>
+                                <a class="dropdown-item" href="#" th:case="'u'">Gender&nbsp;:&nbsp;&nbsp;Unknow</a>
+
+                                <div class="dropdown-divider"></div>
+                                <a id="worker-email" class="dropdown-item" href="#" th:text="'Email&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;' +  ${worker.email}">Email:</a>
+
+                                <div class="dropdown-divider"></div>
+                                <a id="worker-role" class="dropdown-item" href="#"  th:text="'Role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;' + ${worker.role}">Role:</a>
+
+<!--                                <div class="dropdown-divider"></div>-->
+<!--                                <a id="logout" class="dropdown-item" href="#">Logout</a>-->
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="scroll scroll-contact">
+                        <!-- List of people etc.-->
+                        <ul id="contact-list" class="people" role="tablist">
+
+                        </ul>
+                    </div>
+
+                </div>
+                <!--        右侧聊天面板-->
+                <!--        右侧聊天面板-->
+                <div class="right">
+
+                    <!--            显示聊天对象-->
+                    <div class="top"><span>To: <span id="chat-name" class="name"></span></span></div>
+                    <div>
+                        <div id="chat-to-id" style="display: none;"></div>
+                        <div id="chat-email" style="display: none;"></div>
+
+                    </div>
+                    <!--            聊天信息展示面板-->
+                    <div class="chat active-chat" data-chat="person">
+                        <div id="output" class="scroll scroll-chat"> </div>
+                    </div>
+
+                    <!--            输入框-->
+                    <div id="write" class="write">
+                        <a href="javascript:;" class="write-link attach"></a>
+                        <input id="input-text" type="text" />
+                        <a href="javascript:;" class=""></a>
+                        <a id="send-text" href="javascript:;" class="write-link send"></a>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+
+    <script th:src="@{/static/js/chat.js}"></script>
+
+</body>
+</html>
