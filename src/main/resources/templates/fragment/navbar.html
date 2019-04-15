@@ -20,14 +20,14 @@
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="dropdownEdict" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Edict</a>
-                <div class="dropdown-menu" aria-labelledby="dropdownEdict">
-                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-bulletin">Push Bulletin</a>
-                    <div class="dropdown-divider"></div>
+                <div class="dropdown-menu" aria-labelledby="dropdownEdict" th:switch="${worker.role}">
+                    <a th:case="manager" class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-bulletin">Push Bulletin</a>
+                    <div th:case="manager" class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-file">Upload File</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-task">Push Task</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-worker">Edict worker</a>
+                    <div th:case="manager" class="dropdown-divider"></div>
+                    <a th:case="manager" class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-task">Push Task</a>
+                    <div th:case="manager" class="dropdown-divider"></div>
+                    <a th:case="manager" class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-worker">Edict worker</a>
                 </div>
             </li>
 
