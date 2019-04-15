@@ -10,3 +10,4 @@ gradle.properties
 gradle/
 AppServer.iml
 webchat.iml
+*.iml
