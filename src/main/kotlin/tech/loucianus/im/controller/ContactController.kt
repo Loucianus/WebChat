@@ -3,6 +3,7 @@ package tech.loucianus.im.controller
 import org.apache.commons.logging.LogFactory
 import org.apache.shiro.SecurityUtils
 import org.apache.shiro.authz.annotation.Logical
+import org.apache.shiro.authz.annotation.RequiresPermissions
 import org.apache.shiro.authz.annotation.RequiresRoles
 import org.apache.shiro.subject.PrincipalCollection
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,6 +28,7 @@ class ContactController {
      * @return 返回所有联系人
      */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
+    @RequiresPermissions(value = ["view"])
     @GetMapping("/contacts/{id}")
     fun getAllContacts(@PathVariable("id") id: Int): JsonResponse {
         val contacts = workerService.getCurrentMessageAndContactList(id)
@@ -40,6 +42,7 @@ class ContactController {
      * @param id 用户id
      */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
+    @RequiresPermissions(value = ["view"])
     @GetMapping("/info/{id}")
     fun getOther(@PathVariable("id") id: Int): JsonResponse {
         val userInfo = workerService.getWorker(id)

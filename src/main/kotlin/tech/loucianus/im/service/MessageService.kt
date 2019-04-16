@@ -7,6 +7,8 @@ interface MessageService {
 
     fun getHistoryMessage(id: Int, uid:Int): Page<Message>
 
+    fun getGroupHistoryMessage(): Page<Message>
+
     fun searchMessage(id: Int, uid: Int, msg: String): Page<Message>
 
     fun setMessage(message: Message)

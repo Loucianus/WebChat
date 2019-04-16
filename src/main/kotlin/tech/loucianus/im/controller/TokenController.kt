@@ -11,6 +11,8 @@ import org.apache.shiro.SecurityUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestMapping
 import org.apache.shiro.authc.UsernamePasswordToken
+import org.apache.shiro.authz.annotation.Logical
+import org.apache.shiro.authz.annotation.RequiresPermissions
 import org.apache.shiro.authz.annotation.RequiresRoles
 import tech.loucianus.im.service.WorkerService
 import javax.servlet.http.HttpSession
@@ -65,7 +67,8 @@ class TokenController {
      *
      * Get the Subject of user and execute to logout.
      */
-    @RequiresRoles("user")
+    @RequiresRoles(value= ["worker", "manager"], logical = Logical.OR)
+    @RequiresPermissions(value = ["view"])
     @DeleteMapping
     fun logout(): JsonResponse {
 
@@ -73,6 +76,4 @@ class TokenController {
 
         return JsonResponse.ok().message("Logout.")
     }
-
-
 }

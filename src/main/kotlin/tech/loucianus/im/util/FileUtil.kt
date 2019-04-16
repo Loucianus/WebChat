@@ -83,4 +83,3 @@ object FileUtil {
         return "$filename.$fileSuffix"
     }
 }
-

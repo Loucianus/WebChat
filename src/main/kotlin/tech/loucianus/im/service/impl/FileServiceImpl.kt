@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import tech.loucianus.im.model.dto.FileList
 import tech.loucianus.im.model.entity.File
 import tech.loucianus.im.repository.FileRepository
 import tech.loucianus.im.service.FileService
@@ -31,6 +32,22 @@ class FileServiceImpl: FileService {
 
     override fun getFiles(): Page<File> {
         return fileRepository.findFiles()
+    }
+
+    override fun getFileList(): Page<FileList> {
+        return fileRepository.findFileList()
+    }
+
+    override fun deleteFileById(id: Int): Boolean {
+        val filepath = fileRepository.findFilePathById(id)
+        val file = java.io.File(filepath)
+
+        try {
+            file.delete()
+        } catch (ex: IOException) {
+            throw IOException("Fail to delete the file.")
+        }
+        return fileRepository.deleteFileById(id) == 1
     }
 
     override fun searchFile(filename: String): Page<File> {

@@ -88,15 +88,22 @@ class WorkerServiceImpl: WorkerService {
                         id = it.id,
                         name = it.name,
                         portrait = it.portrait,
-                        content = message.content,
-                        type = message.type,
                         email = it.email,
-                        date = message.date.toString(),
                         role = it.role
                     )
                 )
             }
         }
+        messageList.add(
+            index = 0,
+            element = Contacts(
+                id = 0,
+                name = "Group Message.",
+                portrait = "static/img/portrait/group.jpg",
+                email = "citrine@loucianus.tech",
+                role = "Group Message."
+            )
+        )
         return messageList
     }
 
@@ -117,19 +124,26 @@ class WorkerServiceImpl: WorkerService {
                 )
             } else {
                 messageList.add(
-                    Contacts(
+                    index = 0,
+                    element = Contacts(
                         id = it.id,
                         name = it.name,
                         portrait = it.portrait,
-                        content = message.content,
-                        type = message.type,
-                        date = message.date.toString(),
                         email = it.email,
                         role = it.role
                     )
                 )
             }
         }
+        messageList.add(
+            Contacts(
+                id = 0,
+                name = "Group Message.",
+                portrait = "static/img/portrait/group.jpg",
+                email = "citrine@loucianus.tech",
+                role = "Group Message."
+            )
+        )
         return messageList
     }
 

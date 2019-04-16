@@ -78,4 +78,3 @@ function submitFormLogin() {
         })
         .catch(error => console.log(error))
 }
-

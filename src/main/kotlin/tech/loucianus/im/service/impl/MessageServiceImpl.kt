@@ -21,6 +21,10 @@ class MessageServiceImpl: MessageService {
         return messageRepository.findHistoryMessage(id, uid)
     }
 
+    override fun getGroupHistoryMessage(): Page<Message> {
+        return messageRepository.findGroupHistoryMessage()
+    }
+
     override fun searchMessage(id: Int, uid: Int, msg: String): Page<Message> {
         val messageList = messageRepository.findMessageByMsg(id, uid, msg)
         if (log.isInfoEnabled) log.info("messageList::$messageList")

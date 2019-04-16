@@ -1,6 +1,7 @@
 package tech.loucianus.im.controller
 
 import org.apache.shiro.authz.annotation.Logical
+import org.apache.shiro.authz.annotation.RequiresPermissions
 import org.apache.shiro.authz.annotation.RequiresRoles
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -17,6 +18,7 @@ class TaskController {
     @Autowired @Lazy lateinit var taskService: TaskService
 
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
+    @RequiresPermissions(value = ["view"])
     @GetMapping("/all")
     fun getTasks(): JsonResponse {
         val tasks = taskService.getTasks()
@@ -28,6 +30,7 @@ class TaskController {
      * @param id task id
      */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
+    @RequiresPermissions(value = ["view"])
     @GetMapping("/{id}")
     fun getTaskDetails(@PathVariable id: Int): JsonResponse {
         val task = taskService.getTaskById(id)

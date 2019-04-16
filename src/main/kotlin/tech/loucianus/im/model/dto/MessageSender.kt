@@ -22,7 +22,7 @@ data class MessageSender (
     /**
      * Message content
      */
-    val data: String = "",
+    val content: String = "",
 
     /**
      * Date
@@ -40,7 +40,7 @@ data class MessageSender (
                 "'from':'$from_id'," +
                 "'to':'$to_id'," +
                 "'username':'$name'," +
-                "'data':'$data'," +
+                "'data':'$content'," +
                 "'date':'$date'" +
                 "}"
     }

@@ -1,9 +1,6 @@
 <!-- navbar -->
-<nav th:fragment="nav" class="navbar navbar-expand-lg navbar-light bg-light rounded" xmlns:th="http://www.thymeleaf.org">
+<nav th:fragment="nav" class="navbar navbar-expand-lg navbar-light bg-light rounded" style="min-width: 1110px" xmlns:th="http://www.thymeleaf.org">
     <a class="navbar-brand" th:href="@{/index}">Web Chat</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
 
     <div class="collapse navbar-collapse" id="navbar">
         <ul class="navbar-nav mr-auto">
@@ -58,8 +55,8 @@
     </div>
 
     <!-- Download File Modal OK -->
-    <div class="modal fade" id="view-file" tabindex="-1" role="dialog" aria-labelledby="fileModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal fade bd-example-modal-lg" id="view-file" tabindex="-1" role="dialog" aria-labelledby="fileModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="fileModalLongTitle">File List</h5>
@@ -68,24 +65,37 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="list-group">
 
-                        <div id="file-list">
-                            <!-- File List-->
-                        </div>
-                        <nav aria-label="file navigation">
-                            <ul id="file-nav" class="pagination justify-content-center"></ul>
-                        </nav>
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <row>
+                                <th scope="col">#</th>
+                                <th class="text-center" scope="col">Name</th>
+                                <th class="text-center" scope="col">Upload<br>Date</th>
+                                <th class="text-center" scope="col">Uploader</th>
+                                <th class="text-center" scope="col">Download<br>Times</th>
+                                <th class="text-center" scope="col">Options</th>
+                            </row>
+                        </tr>
+                        </thead>
+                        <tbody id="file-list">
 
-                    </div>
+                        </tbody>
+                    </table>
+
+                    <nav aria-label="file navigation">
+                        <ul id="file-nav" class="pagination justify-content-center"></ul>
+                    </nav>
+
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Upload File Modal -->
-    <div class="modal fade" id="edict-file" tabindex="-1" role="dialog" aria-labelledby="edict-file-title" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal fade bd-example-modal-lg" id="edict-file" tabindex="-1" role="dialog" aria-labelledby="edict-file-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="edict-file-title">File List</h5>
@@ -171,8 +181,8 @@
     </div>
 
     <!-- View Task Modal -->
-    <div class="modal fade" id="view-task" tabindex="-1" role="dialog" aria-labelledby="fileModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal fade bd-example-modal-lg" id="view-task" tabindex="-1" role="dialog" aria-labelledby="fileModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="taskModalLongTitle">Task</h5>
@@ -191,8 +201,8 @@
     </div>
 
     <!-- Publish Task Modal -->
-    <div class="modal fade" id="edict-task" tabindex="-1" role="dialog" aria-labelledby="edict-task-title" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal fade bd-example-modal-lg" id="edict-task" tabindex="-1" role="dialog" aria-labelledby="edict-task-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="edict-task-title">Task</h5>
@@ -211,8 +221,8 @@
     </div>
 
     <!-- Add or Delete Worker Modal -->
-    <div class="modal fade" id="edict-worker" tabindex="-1" role="dialog" aria-labelledby="edict-worker-title" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal fade bd-example-modal-lg" id="edict-worker" tabindex="-1" role="dialog" aria-labelledby="edict-worker-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="edict-worker-title">Worker</h5>

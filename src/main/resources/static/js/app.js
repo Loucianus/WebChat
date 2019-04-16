@@ -1,3 +1,6 @@
+const role = $("#worker-role-hide").html().toString();
+const permission = $("#worker-permission-hide").html().toString();
+
 /**
  * Const
  *
@@ -11,39 +14,6 @@ const METHOD_PUT = "PUT";
 const HEADERS_JSON = new Headers({
     "Content-Type":"application/json;charset=UTF-8"
 });
-
-
-// 选中
-// document.querySelector('.chat[data-chat=bulletin]').classList.add('active-chat');
-// document.querySelector('.person[data-chat=bulletin]').classList.add('active');
-
-let friends = {
-        list: document.querySelector('ul.people'),
-        all: document.querySelectorAll('.left .person'),
-        name: '' },
-
-    chat = {
-        container: document.querySelector('.container .right'),
-        current: null,
-        person: null,
-        name: document.querySelector('.container .right .top .name') };
-
-friends.all.forEach(function (f) {
-    f.addEventListener('mousedown', function () {
-        f.classList.contains('active') || setActiveChat(f);
-    });
-});
-
-function setActiveChat(f) {
-    friends.list.querySelector('.active').classList.remove('active');
-    f.classList.add('active');
-    chat.current = chat.container.querySelector('.active-chat');
-    chat.person = f.getAttribute('data-chat');
-    chat.current.classList.remove('active-chat');
-    chat.container.querySelector('[data-chat="' + chat.person + '"]').classList.add('active-chat');
-    friends.name = f.querySelector('.name').innerText;
-    chat.name.innerHTML = friends.name;
-}
 
 /**
  * File-Show
@@ -68,7 +38,7 @@ function viewFile() {
         .then(response => { return response.json() })
         .then(function (result) {
             console.log(result.data);
-            setFileList(result.data.list);
+            setFileList(result.data);
             setFileNav(result.data);
         })
         .catch(error => console.log(error));
@@ -76,15 +46,42 @@ function viewFile() {
 }
 
 function setFileList(data) {
-    let html = '';
-    for (let i=0, len = data.length;i < len; i++) {
-        /** @namespace data.filepath */
-        html += "<button type='button' class='list-group-item list-group-item-action' data-toggle='modal' data-target='#fileModalLong' onclick='downloadFile(" + JSON.stringify(data[i]) + ")'>"
-            + data[i].filename
-            + "<span style='float: right;'>" + new Date(data[i].uploadDate).Format("yyyy-MM-dd") + "</span>"
-            + "</button>"
+
+    if (role === "" || typeof role === "undefined" ) {
+        if (role !== "worker" && role !== 'manager')
+        alert("Role: " + role + " Has No PERMISSION To Download File.");
+        return;
     }
-    $("#file-list").html( html );
+
+    let list = data.list;
+    let html = '';
+    for (let i=0, len = list.length;i < len; i++) {
+        /** @namespace data.pageSize */
+        let num = data.pageSize * (data.pageNum - 1) + i + 1;
+        html +=
+            "<tr><row>" +
+            "<th class='text-left' scope='row'>" + num + "</th>" +
+            "<td class='text-left'>" + list[i].filename + "</td>" +
+            "<td class='text-center'>" + new Date(list[i].uploadDate).Format("yyyy-MM-dd") + "</td>" +
+            "<td class='text-center'>" + list[i].name +"</td>" +
+            /** @namespace data.downloadTimes */
+            "<td class='text-center'>" + list[i].downloadTimes +"</td>";
+        if (role === 'worker') {
+            /** @namespace data.uploaderId */
+            if (list[i].email === $("#worker-email-hide").html()) {
+                /** @namespace list.fileId */
+                html += "<td><row><button type='button' class='btn btn-outline-primary btn-sm col-sm-6' onclick='downloadFile(" + JSON.stringify(list[i]) + ")'>Download</button><button type='button' class='btn btn-outline-danger btn-sm col-sm-6' onclick='deleteFile(" + list[i].fileId + ")'>Delete</button></row></td>"
+            } else {
+                html += "<td><row><div class='com-sm-6'></div><button type='button' class='btn btn-outline-primary btn-sm col-sm-6' onclick='downloadFile(" + JSON.stringify(list[i]) + ")'>Download</button></td>"
+            }
+        } else if (role === 'manager') {
+            html += "<td><row><button type='button' class='btn btn-outline-primary btn-sm col-sm-6' onclick='downloadFile(" + JSON.stringify(list[i]) + ")'>Download</button><button type='button' class='btn btn-outline-danger btn-sm col-sm-6' onclick='deleteFile(" + list[i].fileId + ")'>Delete</button></row></td>"
+        }
+        html += "</row></tr>";
+        $("#file-list").html( html );
+    }
+
+
 }
 
 function setFileNav(data) {
@@ -143,8 +140,31 @@ function jump(data) {
     }
 }
 
-function downloadFile(fid) {
-    window.location.href = "file?fullPath=" + fid.filepath
+function downloadFile(file) {
+    /** @namespace file.fullPath */
+    window.location.href = "file?fullPath=" + file.fullPath
+}
+
+function deleteFile(id) {
+    const url = 'file/' + id;
+
+    const general = {
+        headers: HEADERS_JSON,
+        method: METHOD_DELETE
+    };
+
+    fetch(url, general)
+        .then(response => { return response.json() })
+        .then(function (result) {
+
+            if (result.meta.status === 200) {
+                alert(result.data);
+                window.reload()
+            } else {
+                alert(result.data)
+            }
+        })
+        .catch(error => console.log(error))
 }
 
 function uploadFile() {
@@ -200,7 +220,7 @@ function publishBulletinDetails() {
     let title = $("#edict-bulletin-title").val();
     let date = new Date().Format("yyyy-MM-dd");
     let details = $("#edict-bulletin-details").val();
-    let publishWorker = $("#worker-name").text().trim();
+    let publishWorker = $("#worker-name-hide").text().trim();
     let publishWorkerId = $("#worker-uid").text().trim();
 
     const body = {
@@ -277,23 +297,4 @@ Date.prototype.Format = function (fmt) {
 /**
  * 注销
  */
-// $("#logout").click(function () {
-//
-//     console.log("logout");
-//
-//     const url = "token";
-//
-//     const general = {
-//         method: METHOD_DELETE
-//     };
-//
-//     fetch(url, general)
-//         .then(response => { return response.json() })
-//         .then(function (result) {
-//             if (result.meta.status === 200) {
-//                 window.location.href = '/'
-//             }
-//         })
-//         .catch(error => console.log(error))
-//
-// });
+

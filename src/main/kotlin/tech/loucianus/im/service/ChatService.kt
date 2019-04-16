@@ -1,9 +1,8 @@
 package tech.loucianus.im.service
 
 import tech.loucianus.im.model.dto.MessageGetter
-import tech.loucianus.im.model.dto.MessageSender
+import tech.loucianus.im.model.dto.GroupMessage
 import tech.loucianus.im.model.entity.Message
-import java.security.Principal
 
 interface ChatService {
     /**
@@ -13,6 +12,8 @@ interface ChatService {
      */
     fun sentToUser(message: MessageGetter)
 
+    fun sentToGroup(message: MessageGetter): GroupMessage
+
     /**
      * Get all chat content file.
      *
@@ -21,4 +22,6 @@ interface ChatService {
      * @return the all message of chat.
      */
     fun getChatFile(id :Int, uid: Int): List<Message>
+
+    fun getGroupChatFile(): List<GroupMessage>
 }

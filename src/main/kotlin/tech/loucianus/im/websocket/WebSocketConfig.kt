@@ -67,15 +67,4 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
         }
         super.configureWebSocketTransport(registration)
     }
-
-//    override fun registerStompEndpoints(stompEndpointRegistry: StompEndpointRegistry) {
-//        //注册一个名为/endpointChat的节点，并指定使用SockJS协议。
-//        stompEndpointRegistry.addEndpoint("/webChat").withSockJS()
-//    }
-//
-//    //配置消息代理（Message Broker），可以理解为信息传输的通道
-//    override fun configureMessageBroker(messageBrokerRegistry: MessageBrokerRegistry) {
-//        //点对点式应增加一个/queue的消息代理。相应的如果是广播室模式可以设置为"/topic"
-//        messageBrokerRegistry.enableSimpleBroker("/queue")
-//    }
 }

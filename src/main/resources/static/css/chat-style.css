@@ -30,6 +30,7 @@
 ::-webkit-scrollbar-corner{
   background: #f6f6f6;
 }
+
 .body {
   background-color: var(--bg);
   -webkit-font-smoothing: antialiased;
@@ -40,36 +41,23 @@
   background-image: linear-gradient( 135deg, #FFF6B7 10%, #F6416C 100%);
   background-size: cover;
   height: 100vh;
-  /*background-repeat: none;*/
 
 }
 
 .wrapper {
   position: relative;
-  left: 50%;
-  width: var(--wrapper);
-  height: 800px;
-  -webkit-transform: translate(-50%, 0);
-  transform: translate(-50%, 0);
+
 }
 
-.chat-container {
-  position: relative;
-  top: 50%;
-  left: 50%;
-  width: 80%;
-  height: 75%;
-  background-color: var(--white);
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
 .chat-container .left {
   float: left;
-  width: 37.6%;
+  max-width: 25%;
+  min-width: 276px;
   height: 100%;
   border: 1px solid var(--light);
   background-color: var(--white);
 }
+
 .chat-container .left .top {
   position: relative;
   width: 100%;
@@ -87,33 +75,6 @@
   background-color: var(--light);
   -webkit-transform: translate(-50%, 0);
   transform: translate(-50%, 0);
-}
-.chat-container .left input {
-  float: left;
-  width: 188px;
-  height: 42px;
-  padding: 0 15px;
-  border: 1px solid var(--light);
-  background-color: #eceff1;
-  border-radius: 21px;
-  font-family: 'Source Sans Pro', sans-serif;
-  font-weight: 400;
-}
-.chat-container .left input:focus {
-  outline: none;
-}
-.chat-container .left a.search {
-  display: block;
-  float: left;
-  width: 42px;
-  height: 42px;
-  margin-left: 10px;
-  border: 1px solid var(--light);
-  background-color: var(--blue);
-  background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/name-type.png");
-  background-repeat: no-repeat;
-  background-position: top 12px left 14px;
-  border-radius: 50%;
 }
 .chat-container .left .people {
   margin-left: -1px;
@@ -191,8 +152,9 @@
 .chat-container .right {
   position: relative;
   float: left;
-  width: 62.4%;
-  height: 100%;
+  max-width: 75%;
+  min-width: 832px;
+  height: 602px;
 }
 .chat-container .right .top {
   width: 100%;
@@ -223,12 +185,18 @@
 }
 .chat-container .right .chat.active-chat {
   display: block;
-  display: flex;
 }
 .bubble {
-  max-width: 336px;
+  max-width: 240px;
   word-wrap:break-word;
+  white-space: pre-line;
+  height: auto;
 }
+.container .right .chat.active-chat {
+  display: block;
+  display: flex;
+}
+/* 加载消息时的动画..*/
 .chat-container .right .chat.active-chat .bubble {
   transition-timing-function: cubic-bezier(0.4, -0.04, 1, 1);
 }
@@ -276,51 +244,46 @@
   position: absolute;
   bottom: 29px;
   left: 30px;
-  height: 42px;
+  height: 80px;
   border: 1px solid var(--light);
   background-color: #eceff1;
   width: calc(100% - 58px);
   border-radius: 5px;
 }
-.chat-container .right .write input {
-  font-size: 16px;
+/* 输入框*/
+.chat-container .right .write textarea {
+  line-height: 22px;
+  font-size: 17px;
   float: left;
   width: 347px;
-  height: 40px;
-  padding: 0 10px;
+  height: 80px;
+  padding: 3px 10px;
   color: var(--dark);
   border: 0;
   outline: none;
   background-color: #eceff1;
   font-family: 'Source Sans Pro', sans-serif;
   font-weight: 400;
+  resize: none;
 }
+/* attch 文件*/
 .chat-container .right .write .write-link.attach:before {
   display: inline-block;
   float: left;
   width: 20px;
-  height: 42px;
+  height: 80px;
   content: '';
   background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/attachment.png");
   background-repeat: no-repeat;
   background-position: center;
 }
-.chat-container .right .write .write-link.smiley:before {
-  display: inline-block;
-  float: left;
-  width: 20px;
-  height: 42px;
-  content: '';
-  background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/smiley.png");
-  background-repeat: no-repeat;
-  background-position: center;
-}
+
 .chat-container .right .write .write-link.send:before {
   display: inline-block;
-  float: left;
+  float: right;
   width: 20px;
-  height: 42px;
-  margin-left: 11px;
+  height: 80px;
+  margin-right: 11px;
   content: '';
   background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/send.png");
   background-repeat: no-repeat;
@@ -404,7 +367,8 @@
 .scroll-chat {
   display: block;
   height: auto;
-  max-height: 429px;
+  max-height: 440px;
+  margin-bottom:20px;
 }
 .scroll-contact {
   height: 504px;

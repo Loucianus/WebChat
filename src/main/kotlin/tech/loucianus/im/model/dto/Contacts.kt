@@ -19,21 +19,6 @@ data class Contacts (
     val portrait: String,
 
     /**
-     * message
-     */
-    val content: String = "你们还没有发过消息.",
-
-    /**
-     * s/i/f: string / image / file
-     */
-    val type: String = "s",
-
-    /**
-     * date
-     */
-    val date: String = "",
-
-    /**
      * email
      */
     val email: String,

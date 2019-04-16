@@ -15,7 +15,4 @@ object CipherUtil {
         System.setProperty("jasypt.encryptor.password", JASYPT_ENCRYPTOR_KEY)
         if (log.isInfoEnabled) log.info("Jasypt Encryptor Password Configuration Completed.")
     }
-
-
-
 }

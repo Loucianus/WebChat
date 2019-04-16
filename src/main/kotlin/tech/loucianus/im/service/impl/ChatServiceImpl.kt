@@ -6,6 +6,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 import tech.loucianus.im.model.dto.MessageGetter
 import tech.loucianus.im.model.dto.MessageSender
+import tech.loucianus.im.model.dto.GroupMessage
 import tech.loucianus.im.model.entity.Message
 import tech.loucianus.im.repository.MessageRepository
 import tech.loucianus.im.service.ChatService
@@ -30,8 +31,8 @@ class ChatServiceImpl: ChatService {
         val messageSender = MessageSender(
             from_id = message.from_id,
             to_id = message.to_id,
-            name =message.name,
-            data = message.data,
+            name = message.name,
+            content = message.data,
             date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format( Date() ),
             type = message.type
         )
@@ -47,7 +48,7 @@ class ChatServiceImpl: ChatService {
                 id = 0,
                 fromId = messageSender.from_id,
                 toId = messageSender.to_id,
-                content = messageSender.data,
+                content = messageSender.content,
                 type = "s",
                 date = Timestamp(System.currentTimeMillis())
             )
@@ -57,13 +58,46 @@ class ChatServiceImpl: ChatService {
         simpMessagingTemplate.convertAndSendToUser(message.to_email, "/topic/private", messageSender)
     }
 
+    override fun sentToGroup(message: MessageGetter): GroupMessage {
+
+        if (log.isInfoEnabled) log.info("message:$message")
+
+
+        messageRepository.saveMessage(
+            Message(
+                id = 0,
+                fromId = message.from_id,
+                toId = 0,
+                content = message.data,
+                type = "s",
+                date = Timestamp(System.currentTimeMillis())
+            )
+        )
+
+        return GroupMessage(
+            fromId = message.from_id,
+            content = message.data,
+            type = message.type,
+            date = Timestamp(System.currentTimeMillis()),
+            name = message.name
+        )
+    }
+
 
     override fun getChatFile(id: Int, uid: Int): List<Message> {
 
         val messageList = messageRepository.findMessage(id, uid)
 
         if (log.isInfoEnabled) log.info("messageList::$messageList")
+
         return messageList
     }
 
+    override fun getGroupChatFile(): List<GroupMessage> {
+        val messageList = messageRepository.findGroupMessage()
+
+        if (log.isInfoEnabled) log.info("messageList::$messageList")
+
+        return messageList
+    }
 }

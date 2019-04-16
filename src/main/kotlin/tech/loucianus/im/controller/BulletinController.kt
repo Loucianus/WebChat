@@ -45,7 +45,7 @@ class BulletinController {
      * @return the result
      */
     @RequiresRoles(value = ["manager"],logical =  Logical.AND)
-    @RequiresPermissions(value = ["view","edict"])
+    @RequiresPermissions(value = ["edict"])
     @PostMapping
     fun setBulletin( @RequestBody @Validated bulletinDetails: BulletinDetails): JsonResponse {
         if (log.isInfoEnabled) log.info("bulletinDetails::$bulletinDetails")
