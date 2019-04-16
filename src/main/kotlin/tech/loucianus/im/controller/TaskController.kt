@@ -5,10 +5,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions
 import org.apache.shiro.authz.annotation.RequiresRoles
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import tech.loucianus.im.model.JsonResponse
 import tech.loucianus.im.service.TaskService
 @RestController
@@ -31,8 +28,8 @@ class TaskController {
      */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["view"])
-    @GetMapping("/{id}")
-    fun getTaskDetails(@PathVariable id: Int): JsonResponse {
+    @GetMapping
+    fun getTaskDetails(@RequestParam("task_id") id: Int): JsonResponse {
         val task = taskService.getTaskById(id)
         return JsonResponse.ok().message(task)
     }

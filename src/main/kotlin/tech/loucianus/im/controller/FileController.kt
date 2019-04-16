@@ -17,8 +17,6 @@ import tech.loucianus.im.service.FileService
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-
-
 @RestController
 @RequestMapping("/file")
 class FileController {
@@ -47,7 +45,7 @@ class FileController {
      */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["view"])
-    @GetMapping("/all/{filename}")
+    @GetMapping("/{filename}/all")
     fun searchFile(@RequestParam(defaultValue = "1") pageNo: Int,
                    @RequestParam(defaultValue = "10") pageSize: Int,
                    @PathVariable("filename") filename: String): JsonResponse {
@@ -61,8 +59,8 @@ class FileController {
      */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["upload"])
-    @PostMapping("/{uid}")
-    fun uploadFile(@RequestParam("file") file: MultipartFile,@PathVariable("uid") uid: Int): JsonResponse {
+    @PostMapping
+    fun uploadFile(@RequestParam("file") file: MultipartFile,@RequestParam("uploader_id") uid: Int): JsonResponse {
         if (log.isInfoEnabled) log.info("upload file")
 
         return JsonResponse.ok().message(fileService.upload(file, uid))
@@ -79,17 +77,19 @@ class FileController {
         response: HttpServletResponse,
         @RequestParam("fullPath") fullPath: String) {
         fileService.download(request, response, fullPath)
-
     }
 
+    /**
+     * 删除文件
+     */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["view", "delete"], logical = Logical.OR)
-    @DeleteMapping("/{id}")
-    fun deleteFile(@PathVariable("id") id: Int): JsonResponse {
+    @DeleteMapping
+    fun deleteFile(@RequestParam("file_id") id: Int): JsonResponse {
         return if (fileService.deleteFileById(id)) {
-            JsonResponse.ok().message("Success to delete.")
+            JsonResponse.noContent().message("Success to delete.")
         } else {
-            JsonResponse.badRequest().message("Fail to delete.")
+            JsonResponse.notFound().message("File does not exist.")
         }
     }
 }

@@ -73,7 +73,6 @@
                                                 }
                                             })
                                             .catch(error => console.log(error))
-
                                     }
                                 </script>
                             </div>
@@ -93,11 +92,22 @@
                 <div class="right">
 
                     <!--            显示聊天对象-->
-                    <div class="top"><span>To: <span id="chat-name" class="name"></span></span></div>
-                    <div>
-                        <div id="chat-to-id" style="display: none;"></div>
-                        <div id="chat-email" style="display: none;"></div>
+                    <div class="top">
+                        <div class="dropdown">To:
+                            <a id="chat-name" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="getWorkerInfo()"></a>
+                            <div id="worker-info-dropdown-menu" class="dropdown-menu" aria-labelledby="chat-name">
+                                <a id="chat-email" class="dropdown-item" href="mailto:XXX@126.com"></a>
+                                <div class="dropdown-divider"></div>
+                                <a id="chat-gender" class="dropdown-item" href="#"></a>
+                                <div class="dropdown-divider"></div>
+                                <a id="chat-role" class="dropdown-item" href="#"></a>
+                            </div>
+                        </div>
+                    </div>
 
+                    <div>
+                        <div id="chat-to-id-hide" style="display: none;"></div>
+                        <div id="chat-email-hide" style="display: none;"></div>
                     </div>
                     <!--            聊天信息展示面板-->
                     <div class="chat active-chat" data-chat="person">
@@ -106,14 +116,13 @@
 
                     <!--            输入框-->
                     <div id="write" class="write">
-                        <a href="javascript:;" class="write-link attach"></a>
+                        <a href="javascript:" class="write-link attach"></a>
                         <label for="input-text" style="display: none"></label>
                         <textarea id="input-text"></textarea>
-                        <a id="send-text" href="javascript:;" class="write-link send"></a>
+                        <a id="send-text" href="javascript:" class="write-link send"></a>
                     </div>
 
                 </div>
-
 
             </div>
         </div>

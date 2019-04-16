@@ -146,7 +146,7 @@ function downloadFile(file) {
 }
 
 function deleteFile(id) {
-    const url = 'file/' + id;
+    const url = 'file?file_id=' + id;
 
     const general = {
         headers: HEADERS_JSON,
@@ -157,7 +157,7 @@ function deleteFile(id) {
         .then(response => { return response.json() })
         .then(function (result) {
 
-            if (result.meta.status === 200) {
+            if (result.meta.status === 204) {
                 alert(result.data);
                 window.reload()
             } else {
@@ -175,7 +175,7 @@ function uploadFile() {
 
     $.ajax({
         type: 'POST',
-        url: "file/" + $("#worker-uid").html(),
+        url: "file?uploader_id=" + $("#worker-uid").html(),
         data: data,
         cache: false,
         processData: false,
@@ -293,8 +293,3 @@ Date.prototype.Format = function (fmt) {
         if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
     return fmt;
 };
-
-/**
- * 注销
- */
-

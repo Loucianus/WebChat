@@ -73,7 +73,7 @@ $().ready(function () {
 
     console.log("Get Contacts...");
 
-    const url = 'contacts/' + uid.text().trim();
+    const url = 'user/contacts/' + uid.text().trim();
 
     const general = {
         headers: HEADERS_JSON,
@@ -116,15 +116,24 @@ function setContactList(data) {
  * 选择聊天对象
  * @param data
  */
+/** @namespace data.email */
 function chatTO(data) {
     // 清除聊天信息
     $('#output').html("");
     // 设置聊天对象信息
-    $("#chat-name").html(data.name);
-    /** @namespace data.email */
-    $("#chat-email").html(data.email);
+    let chat_name =$("#chat-name");
+    chat_name.html(data.name);
 
-    let id = $("#chat-to-id");
+    $("#chat-email-hide-hide").html(data.email);
+    let id = $("#chat-to-id-hide");
+    id.html(data.id);
+    if (parseInt(data.id) === 0) {
+        chat_name.removeAttr("onclick");
+        $("#worker-info-dropdown-menu").hide()
+    } else {
+        chat_name.attr("onclick", "getWorkerInfo()");
+        $("#worker-info-dropdown-menu").show()
+    }
     id.html(data.id);
 
     getChatFile(parseInt(id.html()), parseInt(uid.text().trim()));
@@ -173,7 +182,7 @@ $('#send-text').click(function () {
         return
     }
 
-    let _to_email = $("#chat-email").html();
+    let _to_email = $("#chat-email-hide-hide").html();
 
     if (_to_email === "" || _to_email === null) {
         alert("The chat partner not selected.");
@@ -181,7 +190,7 @@ $('#send-text').click(function () {
         return;
     }
 
-    let to_id = $("#chat-to-id");
+    let to_id = $("#chat-to-id-hide");
     let message = {
         "to_id" : parseInt(to_id.html()),
         "from_id": parseInt(uid.text().trim()),
@@ -210,7 +219,7 @@ $('#send-text').click(function () {
  * @param message
  */
 function handlePrivate(message) {
-    let to_id = $("#chat-to-id");
+    let to_id = $("#chat-to-id-hide");
     let msg = JSON.parse(message.body);
     console.log("message.body" + JSON.stringify(msg));
     if (parseInt(to_id.html()) === msg.id) {
@@ -227,7 +236,7 @@ function handlePrivate(message) {
 function handleNotification(message) {
     let msg = JSON.parse(message.body);
     console.log("message.body" + msg.data.fromId !== parseInt(uid.html()));
-    let to_id = $("#chat-to-id");
+    let to_id = $("#chat-to-id-hide");
     /** @namespace msg.data.fromID */
     if (0 === parseInt(to_id.html()) && parseInt(msg.data.fromId) !== parseInt(uid.html())) {
         $('#output').append(
@@ -273,32 +282,36 @@ function scroll() {
 /**
  * 查看用户资料
  */
-$("#chat-user-model").click(function () {
-    const url = 'worker/id=' + $("#chat-to-id").text();
+function getWorkerInfo() {
+    let id =parseInt($("#chat-to-id-hide").html().toString());
+    if (id === 0) {
+        return
+    }
 
-    const headers = new Headers({
-        "Content-Type":"application/json;charset=UTF-8"
-    });
-
-    const method = "GET";
-
+    const url = "user/info/" + id;
+    console.log("url" + url);
     const general = {
-        headers: headers,
-        method: method
+        headers: HEADERS_JSON,
+        method: METHOD_GET
     };
 
+    /** @namespace data.gender */
     fetch(url, general)
         .then(response => { return response.json() })
         .then(function (result) {
-
-            console.log("file get::" + result.meta.status);
+            console.log(result);
             if (result.meta.status === 200) {
-                console.log(result.toString())
-
-            } else  {
-                console.log("code::" + result.meta.status)
+                let data = result.data;
+                let email =$("#chat-email");
+                email.html("Email&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;" + data.email);
+                email.attr("href", "mailto:" + data.email);
+                if (data.gender === "f")
+                    $("#chat-gender").html("Gender&nbsp;&nbsp;:&nbsp;&nbsp;Female");
+                else if (data.gender === "m")
+                    $("#chat-gender").html("Gender&nbsp;&nbsp;:&nbsp;&nbsp;Male");
+                else $("#chat-gender").html("Gender : Unknow");
+                $("#chat-role").html("Role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;" + data.role)
             }
-
         })
         .catch(error => console.log(error));
-});
+}

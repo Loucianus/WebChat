@@ -12,8 +12,8 @@ import tech.loucianus.im.model.JsonResponse
 import tech.loucianus.im.service.WorkerService
 
 @RestController
-@RequestMapping()
-class ContactController {
+@RequestMapping("/user")
+class WorkerController {
 
     companion object {
         private val log = LogFactory.getLog(this::class.java)
@@ -44,7 +44,7 @@ class ContactController {
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["view"])
     @GetMapping("/info/{id}")
-    fun getOther(@PathVariable("id") id: Int): JsonResponse {
+    fun getOther(@PathVariable("id") id: Int): JsonResponse? {
         val userInfo = workerService.getWorker(id)
         return JsonResponse.ok().message(userInfo)
     }

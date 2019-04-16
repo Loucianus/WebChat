@@ -63,10 +63,4 @@ class ChatController {
         return JsonResponse.ok().message(list)
     }
 
-    @RequiresRoles(value = ["user", "admin"],logical =  Logical.OR)
-    @GetMapping("/undefined")
-    fun undefined() {
-
-    }
-
 }
