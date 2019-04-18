@@ -316,8 +316,9 @@ function addWorker() {
 
     const url = "worker";
     let body = {};
+
     if (role === "manager") {
-       body = {
+        body = {
             "name" : name,
             "email" : email,
             "role" : role,
@@ -327,7 +328,8 @@ function addWorker() {
         body = {
             "name" : name,
             "email" : email,
-            "role" : role
+            "role" : role,
+            "permission" : ""
         };
     }
 
@@ -335,7 +337,7 @@ function addWorker() {
 
     const general = {
         headers: HEADERS_JSON,
-        body: body,
+        body: JSON.stringify(body),
         method: METHOD_POST
     };
 
@@ -343,9 +345,13 @@ function addWorker() {
         .then(result => {return result.json()})
         .then(function (result) {
             if (result.meta.status === 200) {
-                alert(result.data)
+                if ( result.data) {
+                    alert("Succeed to add the worker.")
+                } else {
+                    alert("Failed to add the worker.")
+                }
             } else {
-                alert(result.data)
+                alert("code: " + result.meta.status + ".Please try again or call the manager." )
             }
         })
         .catch(err => console.log(err))

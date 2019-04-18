@@ -6,12 +6,11 @@ import org.apache.ibatis.annotations.Select
 import org.apache.ibatis.annotations.Update
 import org.springframework.stereotype.Repository
 import tech.loucianus.im.model.po.Task
-import tech.loucianus.im.model.dao.TaskSetter
 
 @Repository
 interface TaskRepository {
 
-    @Select("select * from task")
+    @Select("select * from task where progress != 'p'")
     fun findTasks(): List<Task>
 
     @Select("select * from task where id=#{id}")

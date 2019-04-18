@@ -16,7 +16,9 @@ interface BulletinService {
     /**
      * Set Bulletin
      *
+     * Get the details of bulletin to save to database
      *
+     * @return If succeed to save the bulletin, return true; otherwise false or throw exp;
      */
-    fun setBulletin(bulletinDetails: BulletinDetails)
+    fun setBulletin(bulletinDetails: BulletinDetails): Boolean
 }

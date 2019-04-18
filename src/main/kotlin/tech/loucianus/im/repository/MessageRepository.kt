@@ -37,7 +37,7 @@ interface MessageRepository {
             "and content like CONCAT('%',#{msg},'%')")
     fun findMessageByMsg(@Param("id")id: Int, @Param("uid") uid: Int, @Param("msg")msg: String): Page<Message>
 
-    @Insert("insert into message (id, from_id, to_id, content, type, date) " +
-            "values (#{id}, #{fromId}, #{toId}, #{content}, #{type}, #{date})")
+    @Insert("insert into message (id, from_id, to_id, content, type, date, target) " +
+            "values (#{id}, #{fromId}, #{toId}, #{content}, #{type}, #{date}, #{target})")
     fun saveMessage(message: Message): Int
 }

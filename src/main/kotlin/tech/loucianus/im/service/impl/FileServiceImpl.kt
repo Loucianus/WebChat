@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import tech.loucianus.im.exception.CustomNotFoundException
 import tech.loucianus.im.model.vo.FileList
 import tech.loucianus.im.model.po.File
 import tech.loucianus.im.repository.FileRepository
@@ -25,14 +26,10 @@ class FileServiceImpl: FileService {
     companion object {
         private val log = LogFactory.getLog(this::class.java)
         private const val localPath = "F:/Files/"
-//        private const val localPath = "/home/Files/"
     }
 
     @Autowired @Lazy lateinit var fileRepository: FileRepository
 
-    override fun getFiles(): Page<File> {
-        return fileRepository.findFiles()
-    }
 
     override fun getFileList(): Page<FileList> {
         return fileRepository.findFileList()
@@ -62,12 +59,12 @@ class FileServiceImpl: FileService {
         fileRepository.saveFile(file)
     }
 
-    override fun upload(file: MultipartFile, uid: Int): String {
+    override fun upload(file: MultipartFile, uid: Int): Boolean {
 
         if (log.isInfoEnabled) log.info("filename::${file.originalFilename}")
 
         if (file.originalFilename == null) {
-            return "File not exits!!"
+            throw CustomNotFoundException("File not exits!!")
         }
 
         val filename = FileUtil.getNewFileName(file.originalFilename!!)
@@ -81,9 +78,9 @@ class FileServiceImpl: FileService {
                     uploadWorker = uid
                 )
             )
-            "success"
+            true
         } else {
-            "false"
+            false
         }
     }
 

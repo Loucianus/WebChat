@@ -87,7 +87,7 @@ class WorkerController {
      */
     @RequiresRoles(value = ["worker", "manager"], logical =  Logical.OR)
     @RequiresPermissions(value = ["view"])
-    @GetMapping("/info/{id}")
+    @GetMapping("/worker/info/{id}")
     fun getOther(@PathVariable("id") id: Int): JsonResponse? {
         val userInfo = workerService.getWorker(id)
         return JsonResponse.ok().message(userInfo)

@@ -11,7 +11,6 @@ import tech.loucianus.im.repository.WorkerRepository
 import tech.loucianus.im.service.BulletinService
 import tech.loucianus.im.util.FileUtil
 import java.io.IOException
-import java.sql.Date
 import java.sql.Timestamp
 
 @Service
@@ -41,7 +40,7 @@ class BulletinServiceImpl: BulletinService {
         )
     }
 
-    override fun setBulletin(bulletinDetails: BulletinDetails) {
+    override fun setBulletin(bulletinDetails: BulletinDetails): Boolean {
         val path = setDetails(bulletinDetails.details, bulletinDetails.date)
         val bulletin = Bulletin(
             id = 0,
@@ -53,24 +52,32 @@ class BulletinServiceImpl: BulletinService {
 
         val result: Int = bulletinRepository.saveBulletin(bulletin)
 
-        if (result == 0) {
-            if (log.isInfoEnabled) log.info("Bulletin has false to be saved.")
-            throw CustomInternalException("Bulletin has false to be saved.")
-        } else if (result > 1) {
-            if (log.isInfoEnabled) log.info("Bulletin has to be saved more than one.")
-            throw CustomInternalException("Bulletin has to be saved more than one.")
+        when {
+            result == 0 -> {
+                if (log.isInfoEnabled) log.info("Bulletin has false to be saved.")
+                throw CustomInternalException("Bulletin has false to be saved.")
+            }
+            result > 1 -> {
+                if (log.isInfoEnabled) log.info("Bulletin has to be saved more than one.")
+                throw CustomInternalException("Bulletin has to be saved more than one.")
+            }
+            result == 1 -> return true
         }
+        return false
     }
 
     @Throws(IOException::class)
     private fun getDetails(timestamp: Timestamp): String {
-        val filePath = "target/bulletin/$timestamp.md"
+        val filePath = "target/bulletin/${timestamp.time}.md"
         return FileUtil.getFileContent(filePath)
     }
 
     @Throws(IOException::class)
     private fun setDetails(bulletinText: String, timestamp: Timestamp): String {
-        val filePath = "target/bulletin/$timestamp.md"
+
+        val filePath = "target/bulletin/${timestamp.time}.md"
+        if (log.isInfoEnabled)
+            log.info("Bulletin was saved at $filePath")
         FileUtil.writeFile(filePath, bulletinText)
         return filePath
     }

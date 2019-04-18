@@ -55,7 +55,17 @@ class WorkerServiceImpl: WorkerService {
     }
 
     override fun setWorker(workerStorer: WorkerStorer): Boolean {
-        return workerRepository.saveWorker(workerStorer) == 1
+        return if (workerStorer.permission == "") {
+            workerRepository.saveWorker(
+                WorkerStorer(
+                    email = workerStorer.email,
+                    name = workerStorer.name,
+                    role = workerStorer.role)
+            ) == 1
+        } else {
+            workerRepository.saveWorker(workerStorer) == 1
+        }
+
     }
 
     override fun setWorkers(workerStorerList: List<WorkerStorer>): Boolean {

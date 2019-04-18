@@ -41,6 +41,13 @@ class ChatServiceImpl: ChatService {
         if (log.isInfoEnabled) {
             log.info("message:$message")
             log.info("messageSender:$messageSender")
+            log.info(
+                if (messageSender.from_id > messageSender.to_id) {
+                    "${messageSender.from_id}#${messageSender.to_id}"
+                } else {
+                    "${messageSender.to_id}#${messageSender.from_id}"
+                }
+            )
         }
 
 

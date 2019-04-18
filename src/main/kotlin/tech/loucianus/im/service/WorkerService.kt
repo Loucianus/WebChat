@@ -47,24 +47,25 @@ interface WorkerService {
     fun getId(email: String): Int
 
     /**
-     * @param
+     * @param workerUpdater
      * @return
      */
     fun updateWorkerByAdmin(workerUpdater: WorkerUpdater): Boolean
 
     /**
-     * @param
+     * @param workerUpdater
      * @return
      */
     fun updateWorkerByWorker(workerUpdater: WorkerUpdater): Boolean
+
     /**
-     * @param
+     * @param workerStorer
      * @return
      */
     fun setWorker(workerStorer: WorkerStorer): Boolean
 
     /**
-     * @param
+     * @param workerStorerList
      * @return
      */
     fun setWorkers(workerStorerList: List<WorkerStorer>): Boolean
@@ -107,7 +108,8 @@ interface WorkerService {
     fun getCurrentMessageAndContactList(email: String): List<Contacts>
 
     /**
-     * @param
+     * Get the authority.
+     * @param email
      */
     fun getAuthority(email: String): Permission
 

@@ -18,9 +18,6 @@ interface FileRepository {
     @Select("select filepath from file where id=#{id}")
     fun findFilePathById(@Param("id") id: Int): String
 
-    @Select("select * from file")
-    fun findFiles(): Page<File>
-
     @Select("select * from file_list")
     fun findFileList(): Page<FileList>
 
