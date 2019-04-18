@@ -25,7 +25,7 @@ class FileServiceImpl: FileService {
 
     companion object {
         private val log = LogFactory.getLog(this::class.java)
-        private const val localPath = "F:/Files/"
+        private const val localPath = "/home/citrine/files/"
     }
 
     @Autowired @Lazy lateinit var fileRepository: FileRepository
