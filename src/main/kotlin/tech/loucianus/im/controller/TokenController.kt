@@ -6,16 +6,13 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import tech.loucianus.im.exception.CustomNotFoundException
 import tech.loucianus.im.model.JsonResponse
-import tech.loucianus.im.model.dto.Account
+import tech.loucianus.im.model.vo.Account
 import org.apache.shiro.SecurityUtils
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestMapping
 import org.apache.shiro.authc.UsernamePasswordToken
 import org.apache.shiro.authz.annotation.Logical
 import org.apache.shiro.authz.annotation.RequiresPermissions
 import org.apache.shiro.authz.annotation.RequiresRoles
-import tech.loucianus.im.service.WorkerService
-import javax.servlet.http.HttpSession
 
 @RestController
 @RequestMapping("/token")
@@ -25,7 +22,6 @@ class TokenController {
         private val log = LogFactory.getLog(this::class.java)
     }
 
-    @Autowired lateinit var workerService: WorkerService
     /**
      * <p>Performing Landing Operation.</p>
      *
@@ -56,7 +52,7 @@ class TokenController {
             // 执行认证登陆
             subject.login(token)
 
-            return JsonResponse.ok().message(workerService.getWorker(account.username))
+            return JsonResponse.ok().message("Success to Login!!")
         }
 
         throw CustomNotFoundException("Account error.(Username or Password Invalid.)")

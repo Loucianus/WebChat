@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import tech.loucianus.im.model.JsonResponse
-import tech.loucianus.im.model.entity.File
-import tech.loucianus.im.model.entity.Message
+import tech.loucianus.im.model.po.Message
 import tech.loucianus.im.service.MessageService
 
 @RestController

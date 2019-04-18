@@ -1,4 +1,4 @@
-package tech.loucianus.im.model.dto
+package tech.loucianus.im.model.vo
 
 import java.io.Serializable
 

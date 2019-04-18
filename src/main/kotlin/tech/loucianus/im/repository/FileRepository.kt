@@ -6,8 +6,8 @@ import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Param
 import org.apache.ibatis.annotations.Select
 import org.springframework.stereotype.Repository
-import tech.loucianus.im.model.dto.FileList
-import tech.loucianus.im.model.entity.File
+import tech.loucianus.im.model.vo.FileList
+import tech.loucianus.im.model.po.File
 
 @Repository
 interface FileRepository {

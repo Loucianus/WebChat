@@ -1,10 +1,9 @@
 package tech.loucianus.im.repository
 
 import org.apache.ibatis.annotations.Insert
-import org.apache.ibatis.annotations.Param
 import org.apache.ibatis.annotations.Select
 import org.springframework.stereotype.Repository
-import tech.loucianus.im.model.entity.Bulletin
+import tech.loucianus.im.model.po.Bulletin
 
 @Repository
 interface BulletinRepository {

@@ -8,12 +8,14 @@ function bindUsername() {
     const submit = $("#submit");
     if (!username_reg.test(username.val())){
         username.attr("class", "form-control is-invalid");
-        $("#usernameHelpBlock").show();
+        // $("#usernameHelpBlock").show();
+        username.attr("required");
         username_flag = false
     }
     else {
         username.attr("class", "form-control is-valid");
-        $("#usernameHelpBlock").hide();
+        // $("#usernameHelpBlock").hide();
+        username.removeAttr("required");
         username_flag = true
     }
 
@@ -30,11 +32,11 @@ function bindPassword() {
     const submit = $("#submit");
     if (password.val() === "" || password.val().length < 8 || password.val().length > 20) {
         password.attr("class", "form-control is-invalid");
-        $("#passwordHelpBlock").show();
+        // $("#passwordHelpBlock").show();
         password_flag = false
     } else {
         password.attr("class", "form-control is-valid");
-        $("#passwordHelpBlock").hide();
+        // $("#passwordHelpBlock").hide();
         password_flag = true
     }
     if (username_flag === true && password_flag === true) {
@@ -71,9 +73,10 @@ function submitFormLogin() {
         .then(function (result) {
 
             if (result.meta.status === 200) {
+                console.log(result.data);
                 window.location.href = 'index'
             } else {
-                $("#accountHelpBlock").show();
+                $("#accountHelpBlock").fadeOut();
             }
         })
         .catch(error => console.log(error))

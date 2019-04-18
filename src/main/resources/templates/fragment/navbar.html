@@ -17,41 +17,22 @@
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="dropdownEdict" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Edict</a>
-                <div class="dropdown-menu" aria-labelledby="dropdownEdict" th:switch="${worker.role}">
-                    <a th:case="manager" class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-bulletin">Push Bulletin</a>
-                    <div th:case="manager" class="dropdown-divider"></div>
+                <div class="dropdown-menu" aria-labelledby="dropdownEdict" th:if="${worker.role} == 'manager'">
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-bulletin">Push Bulletin</a>
+                    <div  class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-file">Upload File</a>
-                    <div th:case="manager" class="dropdown-divider"></div>
-                    <a th:case="manager" class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-task">Push Task</a>
-                    <div th:case="manager" class="dropdown-divider"></div>
-                    <a th:case="manager" class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-worker">Edict worker</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-task">Push Task</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-worker">Edict worker</a>
+                </div>
+                <div class="dropdown-menu" aria-labelledby="dropdownEdict" th:if="${worker.role} == 'worker'">
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-file">Upload File</a>
                 </div>
             </li>
 
         </ul>
 
-    </div>
-
-    <!-- View Worker Info Modal -->
-    <div class="modal fade" id="view-worker" tabindex="-1" role="dialog" aria-labelledby="view-worker-title" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="view-worker-title"></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <ul class="list-group list-group-flush">
-                        <li id="chat-user-model-name" class="list-group-item"></li>
-                        <li id="chat-user-model-Age" class="list-group-item"></li>
-                        <li id="chat-user-model-email" class="list-group-item"></li>
-                        <li id="chat-user-model-role" class="list-group-item"></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Download File Modal OK -->
@@ -221,8 +202,8 @@
     </div>
 
     <!-- Add or Delete Worker Modal -->
-    <div class="modal fade bd-example-modal-lg" id="edict-worker" tabindex="-1" role="dialog" aria-labelledby="edict-worker-title" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal fade" id="edict-worker" tabindex="-1" role="dialog" aria-labelledby="edict-worker-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="edict-worker-title">Worker</h5>
@@ -231,12 +212,47 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="list-group">
 
+                    <div class="form-group row">
+                        <label for="add-worker-name-input" class="col-sm-2 col-form-label lead">Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control lead" id="add-worker-name-input" placeholder="Example : Tom White" minlength="1" maxlength="15">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="add-worker-email-input" class="col-sm-2 col-form-label lead" >Email</label>
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control lead" id="add-worker-email-input" placeholder="Example : example@citrine.studio">
+                        </div>
+                    </div>
 
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label lead" for="add-worker-role-select">Role</label>
+                        <div class="col-sm-10">
+                            <select class="custom-select" id="add-worker-role-select">
+                                <option value="worker" class="lead" selected>Worker</option>
+                                <option value="manager" class="lead">Manager</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="add-worker-permission-form" class="form-group row" style="display: none">
+                        <label class="col-sm-2 col-form-label lead" for="add-worker-permission-select">Permission</label>
+                        <div class="col-sm-10">
+                            <select class="custom-select" id="add-worker-permission-select">
+                                <option value="admin" class="lead" selected>Admin</option>
+                                <option value="root" class="lead">Root</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="addWorker()">Add</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </nav>

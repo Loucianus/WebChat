@@ -50,12 +50,6 @@ class ShiroConfig {
 
         val subjectDAO = DefaultSubjectDAO()
 
-//        val defaultSessionStorageEvaluator = DefaultSessionStorageEvaluator()
-
-//        defaultSessionStorageEvaluator.isSessionStorageEnabled = false
-
-//        subjectDAO.sessionStorageEvaluator = defaultSessionStorageEvaluator
-
         manager.subjectDAO = subjectDAO
 
         manager.cacheManager = ehcacheManager()

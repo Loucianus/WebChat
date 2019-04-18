@@ -1,9 +1,10 @@
-package tech.loucianus.im.model.dto
+package tech.loucianus.im.model.po
 
 import java.io.Serializable
-import java.sql.Date
+import java.sql.Timestamp
 
-data class BulletinDetails (
+data class Bulletin (
+
     /**
      * id
      */
@@ -17,18 +18,16 @@ data class BulletinDetails (
     /**
      * publish date
      */
-    val date: Date,
+    val date: Timestamp,
 
     /**
-     * the details
+     * the file path of the details
      */
-    val details: String,
+    val path: String,
 
     /**
      * worker of publish
      */
-    val publishWorker: String,
-
-    val publishWorkerId: Int
+    val publishWorker: Int
 
 ) : Serializable

@@ -1,20 +1,16 @@
-package tech.loucianus.im.model.dto
+package tech.loucianus.im.model.dao
 
 import java.io.Serializable
 
 data class Permission(
     /**
-     * id
-     */
-    val id: Int,
-
-    /**
      * role
      */
-    val role: String,
+    val role: String = "",
 
     /**
      * permission
      */
-    val permission: String
+    val permission: String = ""
+
 ) : Serializable

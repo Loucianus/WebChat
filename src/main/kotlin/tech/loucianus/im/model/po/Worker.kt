@@ -1,4 +1,4 @@
-package tech.loucianus.im.model.entity
+package tech.loucianus.im.model.po
 
 import java.io.Serializable
 
@@ -48,4 +48,5 @@ data class Worker (
      * permission: view | edict | download | upload
      */
     val permission: String
+
 ) : Serializable

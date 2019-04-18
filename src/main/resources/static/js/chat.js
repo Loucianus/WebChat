@@ -1,6 +1,6 @@
 const uid = $("#worker-uid");
 
-var friends = {
+let friends = {
         list: document.querySelector('ul.people'),
         all: document.querySelectorAll('.left .person'),
         name: '' },
@@ -14,11 +14,11 @@ var friends = {
 
 friends.all.forEach(function (f) {
     f.addEventListener('mousedown', function () {
-        f.classList.contains('active') || setAciveChat(f);
+        f.classList.contains('active') || setActiveChat(f);
     });
 });
 
-function setAciveChat(f) {
+function setActiveChat(f) {
     friends.list.querySelector('.active').classList.remove('active');
     f.classList.add('active');
     chat.current = chat.container.querySelector('.active-chat');
@@ -37,28 +37,19 @@ let sessionId = null;
 function connect() {
     let socket = new SockJS('/gs-guide-websocket');
     stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
+    stompClient.connect({}, function () {
         sessionId = /\/([^\/]+)\/websocket/.exec(socket._transport.url)[1];
         // 群聊
         stompClient.subscribe('/topic/greetings', function (greeting) {
-            // showGreeting(JSON.parse(greeting.body).content);
-            // console.log("public");
             handleNotification(greeting)
         });
         // 私信
         stompClient.subscribe('/user/topic/private', function (greeting) {
             handlePrivate(greeting);
-            // console.log("private")
         });
-
         // 在线用户列表
         stompClient.subscribe('/topic/userlist', function (greeting) {
-            //     var parse = JSON.parse(greeting.body);
-            //     if (parse.online) {
-            //         showUser(parse.name, parse.id);
-            //     } else {
-            //         removeUser(parse.id);
-            //     }
+
         });
     });
 }
@@ -73,7 +64,7 @@ $().ready(function () {
 
     console.log("Get Contacts...");
 
-    const url = 'user/contacts/' + uid.text().trim();
+    const url = 'worker/contacts/';
 
     const general = {
         headers: HEADERS_JSON,
@@ -101,14 +92,13 @@ function setContactList(data) {
     let html = '';
     for (let i=0, len = data.length;i < len; i++) {
         /** @namespace data.portrait */
-        html += "<div class='person' data-chat='person' onclick='chatTO(" + JSON.stringify(data[i]) + ")'>" +
+        html += "<div id='person" + data[i].id +"' class='person' data-chat='person" + data[i].id +"' onclick='chatTO(" + JSON.stringify(data[i]) + ")'>" +
             "<img src='" + data[i].portrait + "' alt='' />" +
             "<span class='name'>" + data[i].name + "</span>" +
             "<span id='badge" + data[i].id + "' class='time badge pull-right'></span>" +
             "<span class='preview'>" + data[i].role + "</span>" +
             "</div>";
     }
-
     $("#contact-list").append( html );
 }
 
@@ -121,19 +111,19 @@ function chatTO(data) {
     // 清除聊天信息
     $('#output').html("");
     // 设置聊天对象信息
-    let chat_name =$("#chat-name");
+    let chat_name =$("#chat-name-top");
     chat_name.html(data.name);
-
-    $("#chat-email-hide-hide").html(data.email);
     let id = $("#chat-to-id-hide");
-    id.html(data.id);
+
     if (parseInt(data.id) === 0) {
         chat_name.removeAttr("onclick");
-        $("#worker-info-dropdown-menu").hide()
+        $("#info-dropdown-menu").attr("style", "display:none")
     } else {
         chat_name.attr("onclick", "getWorkerInfo()");
-        $("#worker-info-dropdown-menu").show()
+        $("#info-dropdown-menu").removeAttr("style");
     }
+
+    $("#chat-email-hide").html(data.email);
     id.html(data.id);
 
     getChatFile(parseInt(id.html()), parseInt(uid.text().trim()));
@@ -145,7 +135,7 @@ function chatTO(data) {
  * @param uid
  */
 function getChatFile(id, uid) {
-
+    console.log("id : " + id + " | uid : " + uid);
     const url = 'chatfile?id=' + id + "&uid=" + uid;
 
     const general = {
@@ -182,8 +172,8 @@ $('#send-text').click(function () {
         return
     }
 
-    let _to_email = $("#chat-email-hide-hide").html();
-
+    let _to_email = $("#chat-email-hide").html();
+    console.log("to_email" + _to_email);
     if (_to_email === "" || _to_email === null) {
         alert("The chat partner not selected.");
         console.log("Please choose the user to chat.");
@@ -221,9 +211,10 @@ $('#send-text').click(function () {
 function handlePrivate(message) {
     let to_id = $("#chat-to-id-hide");
     let msg = JSON.parse(message.body);
+    console.log("to-id : " + to_id.html() + " | msg-id : " + msg.from_id + " | msg-to : " + msg.to_id);
     console.log("message.body" + JSON.stringify(msg));
-    if (parseInt(to_id.html()) === msg.id) {
-        $('#output').append(
+    if (parseInt(to_id.html()) === msg.from_id) {
+        $("#output").append(
             "<div class='bubble you'>" + msg.content + "</div>"
         );
     }
@@ -279,39 +270,3 @@ function scroll() {
     div.scrollTop(top);
 }
 
-/**
- * 查看用户资料
- */
-function getWorkerInfo() {
-    let id =parseInt($("#chat-to-id-hide").html().toString());
-    if (id === 0) {
-        return
-    }
-
-    const url = "user/info/" + id;
-    console.log("url" + url);
-    const general = {
-        headers: HEADERS_JSON,
-        method: METHOD_GET
-    };
-
-    /** @namespace data.gender */
-    fetch(url, general)
-        .then(response => { return response.json() })
-        .then(function (result) {
-            console.log(result);
-            if (result.meta.status === 200) {
-                let data = result.data;
-                let email =$("#chat-email");
-                email.html("Email&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;" + data.email);
-                email.attr("href", "mailto:" + data.email);
-                if (data.gender === "f")
-                    $("#chat-gender").html("Gender&nbsp;&nbsp;:&nbsp;&nbsp;Female");
-                else if (data.gender === "m")
-                    $("#chat-gender").html("Gender&nbsp;&nbsp;:&nbsp;&nbsp;Male");
-                else $("#chat-gender").html("Gender : Unknow");
-                $("#chat-role").html("Role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;" + data.role)
-            }
-        })
-        .catch(error => console.log(error));
-}

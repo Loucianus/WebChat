@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import tech.loucianus.im.model.dto.FileList
-import tech.loucianus.im.model.entity.File
+import tech.loucianus.im.model.vo.FileList
+import tech.loucianus.im.model.po.File
 import tech.loucianus.im.repository.FileRepository
 import tech.loucianus.im.service.FileService
 import tech.loucianus.im.util.FileUtil
@@ -75,6 +75,7 @@ class FileServiceImpl: FileService {
         return if (FileUtil.upload(file, localPath, filename)) {
             setFile(
                 File(
+                    id = 0,
                     filename = file.originalFilename!!,
                     filepath = "$localPath$filename",
                     uploadWorker = uid

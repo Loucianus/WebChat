@@ -23,98 +23,33 @@
 
         <div class="wrapper" style="margin: auto; min-width: 1110px">
             <div class="chat-container">
-                <!--        左侧联系人展示-->
+
+                <!-- 左侧联系人展示 -->
                 <div class="left">
-                    <!--            搜索框-->
-                    <div class="top">
-                        <form class=" form-inline my-2 my-md-0 nav-item dropdown">
-
-                            <img id="u-pic" th:src="${worker.portrait}" src="" alt="..." class="rounded-circle " style="width: 40px; height: 40px;">
-                            &nbsp;&nbsp;&nbsp;<a class="dropdown-toggle" href="#" id="dropdownInfo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text="${worker.name}"></a>
-
-                            <div class="dropdown-menu" aria-labelledby="dropdownInfo" th:switch="${worker.gender}">
-
-                                <a id="worker-uid" style="display: none;" th:text="${worker.id}"></a>
-                                <a id="worker-name-hide" style="display: none;" th:text="${worker.name}"></a>
-                                <a id="worker-email-hide" style="display: none;" th:text="${worker.email}"></a>
-                                <a id="worker-role-hide" style="display: none;" th:text="${worker.role}"></a>
-                                <a id="worker-permission-hide" style="display: none" th:text="${worker.role}"></a>
-                                <a  class="dropdown-item" href="#"  th:text="'Name&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;' + ${worker.name}">Name:</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" th:case="'f'">Gender&nbsp;:&nbsp;&nbsp;Female</a>
-                                <a class="dropdown-item" href="#" th:case="'m'">Gender&nbsp;:&nbsp;&nbsp;Male</a>
-                                <a class="dropdown-item" href="#" th:case="'u'">Gender&nbsp;:&nbsp;&nbsp;Unknow</a>
-
-                                <div class="dropdown-divider"></div>
-                                <a id="worker-email" class="dropdown-item" href="#" th:text="'Email&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;' +  ${worker.email}">Email:</a>
-
-                                <div class="dropdown-divider"></div>
-                                <a id="worker-role" class="dropdown-item" href="#"  th:text="'Role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;' + ${worker.role}">Role:</a>
-
-                                <div class="dropdown-divider"></div>
-                                <button type="button" class="btn btn-danger dropdown-item " onclick="outLanding()">Logout</button>
-                                <script th:inline="javascript">
-                                    function outLanding () {
-
-                                        console.log("logout");
-
-                                        const url = "token";
-
-                                        const general = {
-                                            method: METHOD_DELETE
-                                        };
-
-                                        fetch(url, general)
-                                            .then(response => { return response.json() })
-                                            .then(function (result) {
-                                                console.log("result.meta.status::::" + result.meta.status);
-                                                if (result.meta.status === 200) {
-                                                    window.location.href = '/'
-                                                }
-                                            })
-                                            .catch(error => console.log(error))
-                                    }
-                                </script>
-                            </div>
-                        </form>
-                    </div>
-
+                    <!-- 个人信息 -->
+                    <div th:replace="fragment/panel :: self_info"></div>
+                    <!-- 联系人列表 -->
                     <div class="scroll scroll-contact">
-                        <!-- List of people etc.-->
                         <ul id="contact-list" class="people" role="tablist">
 
                         </ul>
                     </div>
 
                 </div>
-                <!--        右侧聊天面板-->
-                <!--        右侧聊天面板-->
+
+                <!-- 右侧聊天面板 -->
                 <div class="right">
 
-                    <!--            显示聊天对象-->
-                    <div class="top">
-                        <div class="dropdown">To:
-                            <a id="chat-name" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="getWorkerInfo()"></a>
-                            <div id="worker-info-dropdown-menu" class="dropdown-menu" aria-labelledby="chat-name">
-                                <a id="chat-email" class="dropdown-item" href="mailto:XXX@126.com"></a>
-                                <div class="dropdown-divider"></div>
-                                <a id="chat-gender" class="dropdown-item" href="#"></a>
-                                <div class="dropdown-divider"></div>
-                                <a id="chat-role" class="dropdown-item" href="#"></a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div id="chat-to-id-hide" style="display: none;"></div>
-                        <div id="chat-email-hide" style="display: none;"></div>
-                    </div>
-                    <!--            聊天信息展示面板-->
+                    <!-- 聊天对象信息 -->
+                    <div th:replace="fragment/panel :: chat_info"></div>
+                    <!-- 聊天信息展示面板 -->
                     <div class="chat active-chat" data-chat="person">
-                        <div id="output" class="scroll scroll-chat"> </div>
+
+                        <div id="output" class="scroll scroll-chat"></div>
+
                     </div>
 
-                    <!--            输入框-->
+                    <!-- 输入框 -->
                     <div id="write" class="write">
                         <a href="javascript:" class="write-link attach"></a>
                         <label for="input-text" style="display: none"></label>

@@ -1,4 +1,4 @@
-package tech.loucianus.im.model.entity
+package tech.loucianus.im.model.po
 
 import tech.loucianus.im.util.Utils
 import java.io.Serializable
@@ -8,7 +8,7 @@ data class File (
     /**
      * id
      */
-    val id: Int = 0,
+    val id: Int,
 
     /**
      * file name
@@ -34,4 +34,5 @@ data class File (
      * worker of uploading
      */
     val uploadWorker: Int
+
 ) : Serializable

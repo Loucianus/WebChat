@@ -3,8 +3,6 @@ const permission = $("#worker-permission-hide").html().toString();
 
 /**
  * Const
- *
- * @type {string}
  */
 const METHOD_GET = "GET";
 const METHOD_POST = "POST";
@@ -16,8 +14,9 @@ const HEADERS_JSON = new Headers({
 });
 
 /**
- * File-Show
+ * File
  */
+// 获取文件列表资源
 function viewFile() {
     console.log("Get Files...");
 
@@ -44,7 +43,7 @@ function viewFile() {
         .catch(error => console.log(error));
 
 }
-
+// 显示文件列表
 function setFileList(data) {
 
     if (role === "" || typeof role === "undefined" ) {
@@ -83,7 +82,7 @@ function setFileList(data) {
 
 
 }
-
+// 文件的翻页
 function setFileNav(data) {
 
     console.log("nav pre:" + data.prePage);
@@ -106,7 +105,7 @@ function setFileNav(data) {
 
     $("#file-nav").html( html );
 }
-
+// 文件页面的跳转
 function jump(data) {
 
     if (data.prePage === 0 || data.nextPage === data.navigatePages + 1) {
@@ -139,12 +138,12 @@ function jump(data) {
         console.log("Web loaded!!");
     }
 }
-
+// 文件的下载
 function downloadFile(file) {
     /** @namespace file.fullPath */
     window.location.href = "file?fullPath=" + file.fullPath
 }
-
+// 文件的删除
 function deleteFile(id) {
     const url = 'file?file_id=' + id;
 
@@ -166,7 +165,7 @@ function deleteFile(id) {
         })
         .catch(error => console.log(error))
 }
-
+// 文件的上传
 function uploadFile() {
 
     let file = $('#upload-file-id').prop("files");
@@ -188,8 +187,9 @@ function uploadFile() {
 }
 
 /**
- * Bulletin-Show
+ * Bulletin
  */
+// 获取数据并展示
 function viewBulletin() {
     const url_bulletin = 'bulletin';
 
@@ -213,7 +213,7 @@ function viewBulletin() {
         })
         .catch(error => console.log(error))
 }
-
+// 更新公告
 function publishBulletinDetails() {
     const url_bulletin = 'bulletin';
     let id = '0';
@@ -252,10 +252,109 @@ function publishBulletinDetails() {
 }
 
 /**
- * 时间格式化
- * @param date
- * @returns {string}
+ * Worker
  */
+// 获取worker的信息
+function getWorkerInfo() {
+    let id =parseInt($("#chat-to-id-hide").html().toString());
+    if (id === 0) {
+        return
+    }
+
+    const url = "worker/info/" + id;
+    console.log("url" + url);
+    const general = {
+        headers: HEADERS_JSON,
+        method: METHOD_GET
+    };
+
+    /** @namespace data.gender */
+    fetch(url, general)
+        .then(response => { return response.json() })
+        .then(function (result) {
+            console.log(result);
+            if (result.meta.status === 200) {
+                let data = result.data;
+                let email =$("#chat-email");
+                email.html("Email&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;" + data.email);
+                email.attr("href", "mailto:" + data.email);
+                if (data.gender === "f")
+                    $("#chat-gender").html("Gender&nbsp;&nbsp;:&nbsp;&nbsp;Female");
+                else if (data.gender === "m")
+                    $("#chat-gender").html("Gender&nbsp;&nbsp;:&nbsp;&nbsp;Male");
+                else $("#chat-gender").html("Gender : Unknow");
+                $("#chat-role").html("Role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;" + data.role);
+                $("#chat-name").html("Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;" + data.name);
+                if (data.status === "i") {
+                    $("#chat-status").html("Status&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;Incumbency")
+                } else if (data.status === "q") {
+                    $("#chat-status").html("Status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Quit")
+                } else if (data.status === "v") {
+                    $("#chat-status").html("Status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;Vacation")
+                } else {
+                    $("#chat-status").html("Status&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;Unknow")
+                }
+            }
+        })
+        .catch(error => console.log(error));
+}
+// 添加用户的联级selector的实现
+let add_role_select = $("#add-worker-role-select");
+add_role_select.change(function () {
+    if (add_role_select.val() === "manager") {
+        $("#add-worker-permission-form").show();
+    } else {
+        $("#add-worker-permission-form").hide();
+    }
+});
+// 添加worker
+function addWorker() {
+    let name = $("#add-worker-name-input").val();
+    let email = $("#add-worker-email-input").val();
+    let role = add_role_select.val();
+    let permission = $("#add-worker-permission-select").val();
+
+    const url = "worker";
+    let body = {};
+    if (role === "manager") {
+       body = {
+            "name" : name,
+            "email" : email,
+            "role" : role,
+            "permission" : permission
+        };
+    } else if (role === "worker") {
+        body = {
+            "name" : name,
+            "email" : email,
+            "role" : role
+        };
+    }
+
+    console.log("add worker body::" + JSON.stringify(body));
+
+    const general = {
+        headers: HEADERS_JSON,
+        body: body,
+        method: METHOD_POST
+    };
+
+    fetch(url, general)
+        .then(result => {return result.json()})
+        .then(function (result) {
+            if (result.meta.status === 200) {
+                alert(result.data)
+            } else {
+                alert(result.data)
+            }
+        })
+        .catch(err => console.log(err))
+}
+
+/**
+ * 时间格式化工具
+ */
+// 时间处理，与现在日期对比，返回显示的格式
 function dateFormat(date) {
 
     let pre = date.toString();
@@ -277,7 +376,7 @@ function dateFormat(date) {
     }
 }
 
-//时间格式化问题
+// 时间格式化
 Date.prototype.Format = function (fmt) {
     let o = {
         "M+": this.getMonth() + 1, //月份

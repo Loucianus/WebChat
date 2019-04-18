@@ -1,4 +1,4 @@
-package tech.loucianus.im.model.entity
+package tech.loucianus.im.model.po
 
 import java.io.Serializable
 
@@ -22,7 +22,7 @@ data class Task(
     /**
      * progress: u/o/p : unknow / on the march / pause
      */
-    val process: Char,
+    val process: String,
 
     /**
      * the string of worker id

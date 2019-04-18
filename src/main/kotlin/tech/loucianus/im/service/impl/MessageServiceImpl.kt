@@ -4,7 +4,7 @@ import com.github.pagehelper.Page
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import tech.loucianus.im.model.entity.Message
+import tech.loucianus.im.model.po.Message
 import tech.loucianus.im.repository.MessageRepository
 import tech.loucianus.im.service.MessageService
 

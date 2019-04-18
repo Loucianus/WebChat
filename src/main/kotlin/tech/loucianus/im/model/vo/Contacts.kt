@@ -1,4 +1,4 @@
-package tech.loucianus.im.model.dto
+package tech.loucianus.im.model.vo
 
 import java.io.Serializable
 
@@ -7,25 +7,26 @@ data class Contacts (
     /**
      * id
      */
-    val id: Int,
+    val id: Int = 0,
+
     /**
      * name
      */
-    val name: String,
+    val name: String = "",
 
     /**
      * path of img
      */
-    val portrait: String,
+    val portrait: String = "",
 
     /**
-     * email
+     * Email
      */
-    val email: String,
+    val email: String = "",
 
     /**
      * role
      */
-    val role: String
+    val role: String = ""
 
 ) : Serializable

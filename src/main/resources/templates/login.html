@@ -20,7 +20,13 @@
 
             <div class="form-group">
                 <label for="accountHelpBlock" class="sr-only control-label">Message of failing to login </label>
-                <span class="form-text text-muted" id="accountHelpBlock" style="display: none" >Account Error！</span>
+<!--                <span class="form-text text-muted" id="accountHelpBlock" style="display: none" >Account Error！</span>-->
+                <div id="accountHelpBlock" class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none">
+                    <strong>Account Error!</strong><br> You should check the account.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
             </div>
 
             <label for="InputEmail" class="sr-only">Email address</label>
@@ -31,11 +37,6 @@
             <input type="password" id="InputPassword" class="form-control" placeholder="Password" required="" oninput="bindPassword()">
             <span class="form-text text-muted" id="passwordHelpBlock" style="display: none">Length Between 8 And 20</span>
 
-            <!--<div class="checkbox mb-3">-->
-                <!--<label>-->
-                    <!--<input type="checkbox" value="remember-me"> Remember me-->
-                <!--</label>-->
-            <!--</div>-->
             <button class="btn btn-lg btn-primary btn-block" type="submit" onclick="submitFormLogin()">Sign in</button>
         </div>
 

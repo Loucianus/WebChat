@@ -1,7 +1,7 @@
 package tech.loucianus.im.service
 
 import com.github.pagehelper.Page
-import tech.loucianus.im.model.entity.Message
+import tech.loucianus.im.model.po.Message
 
 interface MessageService {
 

@@ -19,8 +19,7 @@ object FileUtil {
      */
     @Throws(IOException::class)
     fun getFileContent(filename: String): String{
-        val f = File(filename)
-        return f.readText(Charset.forName("UTF-8"))
+        return File(filename).readText(Charset.forName("UTF-8"))
     }
 
     /**
@@ -78,7 +77,7 @@ object FileUtil {
     }
 
     fun getNewFileName(originalFilename: String): String {
-        val filename = Utils.getNowTimestamp()
+        val filename = Utils.getNowTimestampStr()
         val fileSuffix = FileUtil.getSuffix(originalFilename)
         return "$filename.$fileSuffix"
     }

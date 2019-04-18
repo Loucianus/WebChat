@@ -4,12 +4,13 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
-import tech.loucianus.im.model.dto.MessageGetter
-import tech.loucianus.im.model.dto.MessageSender
-import tech.loucianus.im.model.dto.GroupMessage
-import tech.loucianus.im.model.entity.Message
+import tech.loucianus.im.model.vo.MessageGetter
+import tech.loucianus.im.model.vo.MessageSender
+import tech.loucianus.im.model.dao.GroupMessage
+import tech.loucianus.im.model.po.Message
 import tech.loucianus.im.repository.MessageRepository
 import tech.loucianus.im.service.ChatService
+import tech.loucianus.im.util.Utils
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
@@ -33,15 +34,15 @@ class ChatServiceImpl: ChatService {
             to_id = message.to_id,
             name = message.name,
             content = message.data,
-            date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format( Date() ),
+            date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()),
             type = message.type
         )
 
         if (log.isInfoEnabled) {
             log.info("message:$message")
-            log.info("message:$messageSender")
-            log.info("to_user::${message.to_email}")
+            log.info("messageSender:$messageSender")
         }
+
 
         messageRepository.saveMessage(
             Message(
@@ -50,10 +51,15 @@ class ChatServiceImpl: ChatService {
                 toId = messageSender.to_id,
                 content = messageSender.content,
                 type = "s",
-                date = Timestamp(System.currentTimeMillis())
+                date = Utils.getNowTimestamp(),
+                target = if (messageSender.from_id > messageSender.to_id) {
+                            "${messageSender.from_id}#${messageSender.to_id}"
+                        } else {
+                            "${messageSender.to_id}#${messageSender.from_id}"
+                        },
+                isRead = "f"
             )
         )
-
         // 第一参数表示接收信息的用户，第二个是浏览器订阅的地址，第三个是消息本身
         simpMessagingTemplate.convertAndSendToUser(message.to_email, "/topic/private", messageSender)
     }
@@ -62,7 +68,6 @@ class ChatServiceImpl: ChatService {
 
         if (log.isInfoEnabled) log.info("message:$message")
 
-
         messageRepository.saveMessage(
             Message(
                 id = 0,
@@ -70,7 +75,9 @@ class ChatServiceImpl: ChatService {
                 toId = 0,
                 content = message.data,
                 type = "s",
-                date = Timestamp(System.currentTimeMillis())
+                date = Utils.getNowTimestamp(),
+                target = "${message.from_id}#0",
+                isRead = "t"
             )
         )
 
@@ -82,7 +89,6 @@ class ChatServiceImpl: ChatService {
             name = message.name
         )
     }
-
 
     override fun getChatFile(id: Int, uid: Int): List<Message> {
 

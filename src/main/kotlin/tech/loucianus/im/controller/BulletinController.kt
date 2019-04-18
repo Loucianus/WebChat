@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import tech.loucianus.im.model.JsonResponse
-import tech.loucianus.im.model.dto.BulletinDetails
+import tech.loucianus.im.model.vo.BulletinDetails
 import tech.loucianus.im.service.BulletinService
 
 @RestController
@@ -45,9 +45,9 @@ class BulletinController {
      * @return the result
      */
     @RequiresRoles(value = ["manager"],logical =  Logical.AND)
-    @RequiresPermissions(value = ["edict"])
+    @RequiresPermissions(value = ["view","edict"], logical = Logical.AND)
     @PostMapping
-    fun setBulletin( @RequestBody @Validated bulletinDetails: BulletinDetails): JsonResponse {
+    fun setBulletin(@RequestBody @Validated bulletinDetails: BulletinDetails): JsonResponse {
         if (log.isInfoEnabled) log.info("bulletinDetails::$bulletinDetails")
         bulletinService.setBulletin(bulletinDetails)
         return JsonResponse.ok().message("Succeed to Save The Bulletin.")

@@ -1,10 +1,11 @@
 package tech.loucianus.im.service
 
-import tech.loucianus.im.model.dto.Account
-import tech.loucianus.im.model.dto.Contact
-import tech.loucianus.im.model.dto.Contacts
-import tech.loucianus.im.model.dto.Permission
-import tech.loucianus.im.model.entity.Worker
+import tech.loucianus.im.model.vo.Contacts
+import tech.loucianus.im.model.dao.Permission
+import tech.loucianus.im.model.dao.WorkerStorer
+import tech.loucianus.im.model.dao.WorkerUpdater
+import tech.loucianus.im.model.vo.*
+import tech.loucianus.im.model.po.Worker
 
 interface WorkerService {
 
@@ -25,6 +26,14 @@ interface WorkerService {
     fun getWorker(id: Int): Worker
 
     /**
+     * Get user entity
+     *
+     * @param
+     * @return
+     */
+    fun getWorkersById(ids: List<Any>): List<Worker>
+
+    /**
      * Get password.
      *
      * @param email Username of user entity
@@ -36,6 +45,30 @@ interface WorkerService {
      * @param email
      */
     fun getId(email: String): Int
+
+    /**
+     * @param
+     * @return
+     */
+    fun updateWorkerByAdmin(workerUpdater: WorkerUpdater): Boolean
+
+    /**
+     * @param
+     * @return
+     */
+    fun updateWorkerByWorker(workerUpdater: WorkerUpdater): Boolean
+    /**
+     * @param
+     * @return
+     */
+    fun setWorker(workerStorer: WorkerStorer): Boolean
+
+    /**
+     * @param
+     * @return
+     */
+    fun setWorkers(workerStorerList: List<WorkerStorer>): Boolean
+
     /**
      * Verify the password.
      *
@@ -56,12 +89,12 @@ interface WorkerService {
     /**
      * @param uid
      */
-    fun getContacts(uid: Int): List<Contact>
+    fun getContacts(uid: Int): List<Contacts>
 
     /**
      * @param email
      */
-    fun getContacts(email: String): List<Contact>
+    fun getContacts(email: String): List<Contacts>
 
     /**
      * @param uid
