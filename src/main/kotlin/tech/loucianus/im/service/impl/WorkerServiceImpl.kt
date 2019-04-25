@@ -60,7 +60,8 @@ class WorkerServiceImpl: WorkerService {
                 WorkerStorer(
                     email = workerStorer.email,
                     name = workerStorer.name,
-                    role = workerStorer.role)
+                    role = workerStorer.role,
+                    gender = workerStorer.gender)
             ) == 1
         } else {
             workerRepository.saveWorker(workerStorer) == 1
@@ -73,19 +74,18 @@ class WorkerServiceImpl: WorkerService {
     }
 
     override fun updateWorkerByAdmin(workerUpdater: WorkerUpdater): Boolean {
-        return workerRepository.updateWorkerByAdmin(workerUpdater) == 1
-    }
+        if (getWorker(workerUpdater.id).permission == "view#edict#download#upload#update#delete")
+            return false
 
-    override fun updateWorkerByWorker(workerUpdater: WorkerUpdater): Boolean {
-
-        return workerRepository.updateWorkerByWorker(
-            WorkerUpdater(
-                name = workerUpdater.name,
-                email = workerUpdater.email,
-                password = cipher.encrypt(workerUpdater.password),
-                portrait = workerUpdater.portrait,
-                gender = workerUpdater.gender
-        )) == 1
+        return if (workerUpdater.permission == "") {
+            workerRepository.updateWorkerByAdmin(
+                    WorkerUpdater(id = workerUpdater.id,
+                            status = workerUpdater.status,
+                            role = workerUpdater.role)
+            ) == 1
+        } else {
+            workerRepository.updateWorkerByAdmin(workerUpdater) == 1
+        }
     }
 
     override fun verify(account: Account): Boolean {
@@ -134,87 +134,6 @@ class WorkerServiceImpl: WorkerService {
         )
 
         return contacts
-    }
-
-    override fun getCurrentMessageAndContactList(uid: Int): List<Contacts> {
-        return mutableListOf<Contacts>()
-//        val messageList = mutableListOf<Contacts>()
-//        getContacts(uid).forEach{
-//            val message = messageRepository.findCurrentMessage(uid, it.id)
-//            if (message == null) {
-//                messageList.add(
-//                    Contacts(
-//                        id = it.id,
-//                        name = it.name,
-//                        portrait = it.portrait,
-//                        email = it.email,
-//                        role = it.role
-//                    )
-//                )
-//            } else {
-//                messageList.add(
-//                    Contacts(
-//                        id = it.id,
-//                        name = it.name,
-//                        portrait = it.portrait,
-//                        email = it.email,
-//                        role = it.role
-//                    )
-//                )
-//            }
-//        }
-//        messageList.add(
-//            index = 0,
-//            element = Contacts(
-//                id = 0,
-//                name = "Group Message.",
-//                portrait = "static/img/portrait/group.jpg",
-//                email = "citrine@loucianus.tech",
-//                role = "Group Message."
-//            )
-//        )
-//        return messageList
-    }
-
-    override fun getCurrentMessageAndContactList(email: String): List<Contacts> {
-        return mutableListOf<Contacts>()
-//        val messageList = mutableListOf<Contacts>()
-//        val worker = getWorker(email)
-//        getContacts(worker.id).forEach{
-//            val message = messageRepository.findCurrentMessage(worker.id, it.id)
-//            if (message == null) {
-//                messageList.add(
-//                    Contacts(
-//                        id = it.id,
-//                        name = it.name,
-//                        portrait = it.portrait,
-//                        email = it.email,
-//                        role = it.role
-//                    )
-//                )
-//            } else {
-//                messageList.add(
-//                    index = 0,
-//                    element = Contacts(
-//                        id = it.id,
-//                        name = it.name,
-//                        portrait = it.portrait,
-//                        email = it.email,
-//                        role = it.role
-//                    )
-//                )
-//            }
-//        }
-//        messageList.add(
-//            Contacts(
-//                id = 0,
-//                name = "Group Message.",
-//                portrait = "static/img/portrait/group.jpg",
-//                email = "citrine@loucianus.tech",
-//                role = "Group Message."
-//            )
-//        )
-//        return messageList
     }
 
     @Cacheable(cacheNames = ["authority"], key = "#email")

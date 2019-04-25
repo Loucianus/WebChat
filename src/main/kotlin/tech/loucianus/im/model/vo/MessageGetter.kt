@@ -24,8 +24,11 @@ data class MessageGetter (
     val type: String,
 
     @field: NotBlank(message = "{username.required}")
-    val name: String
+    val name: String,
 
+    val fid: Int = 0,
+
+    val filename: String
 ) :Serializable {
     override fun toString(): String {
         return "{" +

@@ -10,29 +10,32 @@
             <a id="worker-name-hide" style="display: none;" th:text="${worker.name}"></a>
             <a id="worker-email-hide" style="display: none;" th:text="${worker.email}"></a>
             <a id="worker-role-hide" style="display: none;" th:text="${worker.role}"></a>
-            <a id="worker-permission-hide" style="display: none" th:text="${worker.role}"></a>
-            <a  class="dropdown-item" href="#"  th:text="'Name&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;' + ${worker.name}">Name:</a>
+            <a id="worker-permission-hide" style="display: none" th:text="${worker.permission}"></a>
+
+            <a  class="dropdown-item" href="#"  th:text="'姓名&nbsp;&nbsp;:&nbsp;&nbsp;' + ${worker.name}"></a>
             <div class="dropdown-divider"></div>
             <div th:switch="${worker.gender}">
-                <a class="dropdown-item" href="#" th:case="'f'">Gender&nbsp;:&nbsp;&nbsp;Female</a>
-                <a class="dropdown-item" href="#" th:case="'m'">Gender&nbsp;:&nbsp;&nbsp;Male</a>
-                <a class="dropdown-item" href="#" th:case="'u'">Gender&nbsp;:&nbsp;&nbsp;Unknow</a>
+                <a class="dropdown-item" href="#" th:case="'f'">性别&nbsp;&nbsp;:&nbsp;&nbsp;女性</a>
+                <a class="dropdown-item" href="#" th:case="'m'">性别&nbsp;&nbsp;:&nbsp;&nbsp;男性</a>
+                <a class="dropdown-item" href="#" th:case="'u'">性别&nbsp;&nbsp;:&nbsp;&nbsp;未知</a>
             </div>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#" th:text="'Email&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;' +  ${worker.email}">Email:</a>
+            <a class="dropdown-item" href="#" th:text="'邮箱&nbsp;&nbsp;:&nbsp;&nbsp;' +  ${worker.email}"></a>
 
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#"  th:text="'Role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;' + ${worker.role}">Role:</a>
+            <a class="dropdown-item" href="#"  th:text="'权限&nbsp;&nbsp;:&nbsp;&nbsp;' + ${worker.role}"></a>
 
             <div class="dropdown-divider"></div>
             <div th:switch="${worker.status}">
-                <a class="dropdown-item" href="#" th:case="'i'">Status&nbsp;:&nbsp;&nbsp;Incumbency</a>
-                <a class="dropdown-item" href="#" th:case="'v'">Status&nbsp;:&nbsp;&nbsp;Vacation</a>
-                <a class="dropdown-item" href="#" th:case="'q'">Status&nbsp;:&nbsp;&nbsp;Quit</a>
+                <a class="dropdown-item" href="#" th:case="'i'">状态&nbsp;&nbsp;:&nbsp;&nbsp;在职</a>
+                <a class="dropdown-item" href="#" th:case="'v'">状态&nbsp;&nbsp;:&nbsp;&nbsp;休假</a>
+                <a class="dropdown-item" href="#" th:case="'q'">状态&nbsp;&nbsp;:&nbsp;&nbsp;离职</a>
             </div>
 
             <div class="dropdown-divider"></div>
-            <button type="button" class="btn btn-danger dropdown-item " onclick="outLanding()">Logout</button>
+            <button type="button" class="btn btn-danger dropdown-item " onclick="edictWorkerInfo()">修改资料</button>
+            <div class="dropdown-divider"></div>
+            <button type="button" class="btn btn-danger dropdown-item " onclick="outLanding()">注销</button>
             <script th:inline="javascript">
                 function outLanding () {
 
@@ -47,7 +50,6 @@
                     fetch(url, general)
                         .then(response => { return response.json() })
                         .then(function (result) {
-                            console.log("result.meta.status::::" + result.meta.status);
                             if (result.meta.status === 200) {
                                 window.location.href = '/'
                             }
@@ -73,6 +75,33 @@
                 <a id="chat-role" class="dropdown-item" href="#"></a>
                 <div class="dropdown-divider"></div>
                 <a id="chat-status" class="dropdown-item" href="#"></a>
+                <div class="dropdown-divider" th:if="${worker.role} == 'manager'"></div>
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-worker-permission" th:if="${worker.role} == 'manager'">权限更改</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" onclick="getHistory()" data-toggle="modal" data-target="#chat-history">聊天记录</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 历史记录 -->
+    <div class="modal fade" id="chat-history" tabindex="-1" role="dialog" aria-labelledby="chat-history-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="chat-history-title">历史记录</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- 聊天信息展示面板 -->
+                    <div class="chat active-chat" data-chat="person" style="padding-bottom: 0">
+                        <div id="history" class="scroll scroll-chat"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

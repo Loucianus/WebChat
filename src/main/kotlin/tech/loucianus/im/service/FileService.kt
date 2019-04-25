@@ -10,13 +10,6 @@ import javax.servlet.http.HttpServletResponse
 interface FileService {
 
     /**
-     * Get file list, each page has the 10 file details to show.
-     *
-     * @return Return the file list. Every time to get the list lower than 10.
-     */
-    fun getFileList(): Page<FileList>
-
-    /**
      * Delete the file where file id = [id]
      *
      * @param id The file db pk.
@@ -30,32 +23,19 @@ interface FileService {
      * @param filename The filename at database.
      * @return Get the file list.
      */
-    fun searchFile(filename: String): Page<File>
-
-    /**
-     * Get the [File] where file path = [path]
-     *
-     * @param path The file path.
-     * @return The string of file path.
-     */
-    fun getFIleByPath(path: String): String
-
-    /**
-     * Save the file details to database.
-     */
-    fun setFile(file: File)
+    fun searchFile(filename: String, uid: Int): Page<FileList>
 
     /**
      * Upload the file.
      *
-     * To upload file to server and use method [setFile] to save message to database.
+     * To upload file to server and to save message to database.
      * @return If save file succeed, return true; otherwise false or exp.
      */
-    fun upload(file: MultipartFile, uid: Int): Boolean
+    fun upload(file: MultipartFile, uid: Int, toId: Int): File
 
     /**
      * Download file.
      */
-    fun download(request: HttpServletRequest, response: HttpServletResponse, absoluteName: String )
+    fun download(request: HttpServletRequest, response: HttpServletResponse, fileId: Int )
 
 }

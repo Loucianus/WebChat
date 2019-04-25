@@ -19,48 +19,55 @@ import tech.loucianus.im.websocket.WebSocketConfig
 @RestController
 class ChatController {
 
-    companion object {
-        private val log = LogFactory.getLog(this::class.java)
-    }
-
     @Autowired private lateinit var chatService: ChatService
-    @Autowired private lateinit var webSocketConfig: WebSocketConfig
+
     /**
-     * 通讯
+     * Send message to a body.
      *
-     * @param message
+     * @param message The message details, See data class [MessageGetter].
+     * @see ChatService.sentToUser The service of sending the message to a body.
      */
     @MessageMapping("/private")
-    fun chat(@RequestBody @Validated message: MessageGetter){
-
-        if (log.isInfoEnabled) log.info("webSocketConfig::${webSocketConfig.users}")
+    fun chat(@RequestBody @Validated message: MessageGetter): JsonResponse{
 
         chatService.sentToUser(message)
+
+        return JsonResponse.ok().message("Send!")
     }
 
+    /**
+     * Send group message
+     *
+     * @param message the message details, See [MessageGetter]
+     * @see ChatService
+     */
     @MessageMapping("/group")
-    @SendTo("/topic/greetings")
+    @SendTo("/topic/group")
     fun chatWithGroup(@RequestBody @Validated message: MessageGetter): JsonResponse{
 
-        if (log.isInfoEnabled) log.info("webSocketConfig::${webSocketConfig.users}")
+        chatService.sentToGroup(message)
 
-        return JsonResponse.ok().message(chatService.sentToGroup(message))
+        return JsonResponse.ok().message("Send!")
     }
 
+    /**
+     * Get the last 10 messages.
+     *
+     * @param id The chat partner's id of the chatting.
+     * @param uid My id of the chatting.
+     * @return The message list of the last 10 messages.
+     */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @GetMapping("/chatfile")
     fun chatFile(@RequestParam("id")id: Int,@RequestParam("uid") uid: Int): JsonResponse {
-        if (log.isInfoEnabled)
-            log.info("chat:$uid-$id")
 
         val list =
-            if (id != 0) {
-                chatService.getChatFile(id, uid)
-            } else {
-                chatService.getGroupChatFile()
-            }
+                if (id != 0) {
+                    chatService.getChatFile(id, uid)
+                } else {
+                    chatService.getGroupChatFile()
+                }
 
         return JsonResponse.ok().message(list)
     }
-
 }

@@ -28,7 +28,9 @@ class IndexController {
     fun indexPage(model: Model) : String {
         val email = SecurityUtils.getSubject().principal as String
         val worker = workerService.getWorker(email)
+        val contacts = workerService.getContacts(email)
         model.addAttribute("worker", worker)
+        model.addAttribute("contacts", contacts)
         return "index"
     }
 

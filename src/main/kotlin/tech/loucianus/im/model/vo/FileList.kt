@@ -30,6 +30,10 @@ data class FileList(
      */
     val downloadTimes: Int,
 
+
+    val toId: Int,
+
+    val uploadWorker: Int,
     /**
      * uploader name
      */
@@ -39,5 +43,6 @@ data class FileList(
      * uploader email
      */
     val email: String
+
 
 ) : Serializable

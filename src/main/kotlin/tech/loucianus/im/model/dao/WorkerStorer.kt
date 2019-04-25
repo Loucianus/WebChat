@@ -21,6 +21,12 @@ data class WorkerStorer (
     val name: String,
 
     /**
+     * Gender
+     */
+    @field: NotBlank(message = "{gender.required}")
+    val gender: String,
+
+    /**
      * role: worker | manager
      */
     @field: NotBlank(message = "{role.required}")

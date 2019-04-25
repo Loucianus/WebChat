@@ -34,10 +34,8 @@ class TokenController {
      * @throws CustomNotFoundException "Account error.(Username or Password Format Invalid.)"
      */
     @PostMapping(consumes = ["application/json"], produces = ["application/json"])
-    fun login(
-        @RequestBody @Validated account: Account,
-        errors: Errors
-    ): JsonResponse {
+    fun login(@RequestBody @Validated account: Account,
+              errors: Errors): JsonResponse {
 
         if (log.isInfoEnabled) log.info("Landing:${account.username}")
 

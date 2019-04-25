@@ -1,62 +1,63 @@
 <!-- navbar -->
 <nav th:fragment="nav" class="navbar navbar-expand-lg navbar-light bg-light rounded" style="min-width: 1110px" xmlns:th="http://www.thymeleaf.org">
-    <a class="navbar-brand" th:href="@{/index}">Web Chat</a>
+    <a class="navbar-brand" th:href="@{/index}">Citrine Studio Online</a>
 
     <div class="collapse navbar-collapse" id="navbar">
         <ul class="navbar-nav mr-auto">
 
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="dropdownView" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">View</a>
+                <a class="nav-link dropdown-toggle" href="#" id="dropdownView" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">选项</a>
                 <div class="dropdown-menu" aria-labelledby="dropdownView">
-                    <a id="view-bulletin-btn" class="dropdown-item" href="#" data-toggle="modal" data-target="#view-bulletin" onclick="viewBulletin()">View Bulletin</a>
+                    <a id="view-bulletin-btn" class="dropdown-item" href="#" data-toggle="modal" data-target="#view-bulletin" onclick="viewBulletin()">公告查看</a>
+<!--                    <div class="dropdown-divider"></div>-->
+<!--                    <a id="view-task-btn" class="dropdown-item" href="#" data-toggle="modal" data-target="#view-task">提交任务</a>-->
                     <div class="dropdown-divider"></div>
-                    <a id="view-task-btn" class="dropdown-item" href="#" data-toggle="modal" data-target="#view-task">Submit Task</a>
+                    <a id="view-file-btn" class="dropdown-item" href="#" data-toggle="modal" data-target="#view-file" onclick="viewFile()">文件下载</a>
                     <div class="dropdown-divider"></div>
-                    <a id="view-file-btn" class="dropdown-item" href="#" data-toggle="modal" data-target="#view-file" onclick="viewFile()">Download File</a>
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-file">文件上传</a>
                 </div>
             </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="dropdownEdict" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Edict</a>
-                <div class="dropdown-menu" aria-labelledby="dropdownEdict" th:if="${worker.role} == 'manager'">
-                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-bulletin">Push Bulletin</a>
-                    <div  class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-file">Upload File</a>
+            <li class="nav-item dropdown" th:if="${worker.role} == 'manager'">
+                <a class="nav-link dropdown-toggle" href="#" id="dropdownEdict" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">管理员</a>
+                <div class="dropdown-menu" aria-labelledby="dropdownEdict" >
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-bulletin">发布公告</a>
+<!--                    <div class="dropdown-divider"></div>-->
+<!--                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-task">发布任务</a>-->
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-task">Push Task</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-worker">Edict worker</a>
-                </div>
-                <div class="dropdown-menu" aria-labelledby="dropdownEdict" th:if="${worker.role} == 'worker'">
-                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-file">Upload File</a>
-                </div>
-            </li>
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-worker">用户添加</a>
+<!--                    <div class="dropdown-divider"></div>-->
+<!--                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edict-worker-import">用户导入</a>-->
 
+                </div>
+            </li>
         </ul>
-
     </div>
 
-    <!-- Download File Modal OK -->
+    <!-- 下载文件 -->
     <div class="modal fade bd-example-modal-lg" id="view-file" tabindex="-1" role="dialog" aria-labelledby="fileModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="fileModalLongTitle">File List</h5>
+                    <h5 class="modal-title" id="fileModalLongTitle">文件列表</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-
+                    <div class="form-inline">
+                        <input id="search-file" class="form-control" type="text" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success" type="button" onclick="searchFile()">查询</button>
+                    </div>
                     <table class="table table-striped">
                         <thead>
                         <tr>
                             <row>
-                                <th scope="col">#</th>
-                                <th class="text-center" scope="col">Name</th>
-                                <th class="text-center" scope="col">Upload<br>Date</th>
-                                <th class="text-center" scope="col">Uploader</th>
-                                <th class="text-center" scope="col">Download<br>Times</th>
-                                <th class="text-center" scope="col">Options</th>
+                                <th scope="col"></th>
+                                <th class="text-center" scope="col">名称</th>
+                                <th class="text-center" scope="col">上传时间</th>
+                                <th class="text-center" scope="col">上传用户</th>
+<!--                                <th class="text-center" scope="col">下载次数</th>-->
+                                <th class="text-center" scope="col">操作</th>
                             </row>
                         </tr>
                         </thead>
@@ -74,7 +75,7 @@
         </div>
     </div>
 
-    <!-- Upload File Modal -->
+    <!-- 上传文件 -->
     <div class="modal fade bd-example-modal-lg" id="edict-file" tabindex="-1" role="dialog" aria-labelledby="edict-file-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
@@ -99,7 +100,7 @@
         </div>
     </div>
 
-    <!-- View Bulletin Modal |ok| -->
+    <!-- 查看公告 -->
     <div class="modal fade bd-example-modal-lg" id="view-bulletin" tabindex="-1" role="dialog" aria-labelledby="bulletinModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
@@ -125,7 +126,7 @@
         </div>
     </div>
 
-    <!-- Publish Bulletin Modal -->
+    <!-- 发布公告 -->
     <div class="modal fade bd-example-modal-lg" id="edict-bulletin" tabindex="-1" role="dialog" aria-labelledby="edict-bulletin-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
@@ -161,7 +162,7 @@
         </div>
     </div>
 
-    <!-- View Task Modal -->
+    <!-- TODO 查看任务 -->
     <div class="modal fade bd-example-modal-lg" id="view-task" tabindex="-1" role="dialog" aria-labelledby="fileModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
@@ -181,7 +182,7 @@
         </div>
     </div>
 
-    <!-- Publish Task Modal -->
+    <!-- TODO 发布任务 -->
     <div class="modal fade bd-example-modal-lg" id="edict-task" tabindex="-1" role="dialog" aria-labelledby="edict-task-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
@@ -201,7 +202,7 @@
         </div>
     </div>
 
-    <!-- Add or Delete Worker Modal -->
+    <!-- 用户添加 -->
     <div class="modal fade" id="edict-worker" tabindex="-1" role="dialog" aria-labelledby="edict-worker-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -214,34 +215,44 @@
                 <div class="modal-body">
 
                     <div class="form-group row">
-                        <label for="add-worker-name-input" class="col-sm-2 col-form-label lead">Name</label>
+                        <label for="add-worker-name-input" class="col-sm-2 col-form-label lead">姓名</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control lead" id="add-worker-name-input" placeholder="Example : Tom White" minlength="1" maxlength="15">
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="add-worker-email-input" class="col-sm-2 col-form-label lead" >Email</label>
+                        <label for="add-worker-email-input" class="col-sm-2 col-form-label lead" >邮箱</label>
                         <div class="col-sm-10">
                             <input type="email" class="form-control lead" id="add-worker-email-input" placeholder="Example : example@citrine.studio">
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-sm-2 col-form-label lead" for="add-worker-role-select">Role</label>
+                        <label class="col-sm-2 col-form-label lead" for="add-worker-gender-select">性别</label>
+                        <div class="col-sm-10">
+                            <select class="custom-select" id="add-worker-gender-select">
+                                <option value="m" class="lead" selected>男性</option>
+                                <option value="f" class="lead">女性</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label lead" for="add-worker-role-select">角色</label>
                         <div class="col-sm-10">
                             <select class="custom-select" id="add-worker-role-select">
-                                <option value="worker" class="lead" selected>Worker</option>
-                                <option value="manager" class="lead">Manager</option>
+                                <option value="worker" class="lead" selected>员工</option>
+                                <option value="manager" class="lead">管理员</option>
                             </select>
                         </div>
                     </div>
 
                     <div id="add-worker-permission-form" class="form-group row" style="display: none">
-                        <label class="col-sm-2 col-form-label lead" for="add-worker-permission-select">Permission</label>
+                        <label class="col-sm-2 col-form-label lead" for="add-worker-permission-select">权限</label>
                         <div class="col-sm-10">
                             <select class="custom-select" id="add-worker-permission-select">
-                                <option value="admin" class="lead" selected>Admin</option>
-                                <option value="root" class="lead">Root</option>
+                                <option value="view#edict#download#upload#update" class="lead" selected>普通管理员</option>
+                                <option value="view#edict#download#upload#update#delete" class="lead">超级管理员</option>
                             </select>
                         </div>
                     </div>
@@ -249,6 +260,58 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" onclick="addWorker()">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 权限更改 -->
+    <div class="modal fade" id="edict-worker-permission" tabindex="-1" role="dialog" aria-labelledby="edict-worker-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="edict-worker-permission-title">权限更改</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label lead" for="worker-permission-status-select">状态</label>
+                        <div class="col-sm-9">
+                            <select class="custom-select" id="worker-permission-status-select">
+                                <option value="i" class="lead" selected>在职</option>
+                                <option value="q" class="lead">离职</option>
+                                <option value="v" class="lead">休假</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label lead" for="worker-permission-role-select">角色</label>
+                        <div class="col-sm-9">
+                            <select class="custom-select" id="worker-permission-role-select">
+                                <option value="worker" class="lead" selected>Worker</option>
+                                <option value="manager" class="lead">Manager</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="worker-permission-permission-form" class="form-group row" style="display: none">
+                        <label class="col-sm-3 col-form-label lead" for="worker-permission-permission-select">权限</label>
+                        <div class="col-sm-9">
+                            <select class="custom-select" id="worker-permission-permission-select">
+                                <option value="view#edict#download#upload#update" class="lead" selected>普通管理员</option>
+                                <option value="view#edict#download#upload#update#delete" class="lead">超级管理员</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="edictWorkerPermission()">Add</button>
                     </div>
                 </div>
             </div>

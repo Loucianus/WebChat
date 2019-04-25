@@ -16,8 +16,4 @@ object Utils {
     fun getSQLDateNow(): java.sql.Date {
         return java.sql.Date(System.currentTimeMillis())
     }
-
-    fun getDate(pattern : String = "yyyy-MM-dd"): String {
-        return SimpleDateFormat(pattern).format(Date()).toString()
-    }
 }

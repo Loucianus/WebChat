@@ -1,6 +1,5 @@
 package tech.loucianus.im.controller
 
-import org.apache.commons.logging.LogFactory
 import org.apache.shiro.authz.annotation.Logical
 import org.apache.shiro.authz.annotation.RequiresPermissions
 import org.apache.shiro.authz.annotation.RequiresRoles
@@ -16,40 +15,35 @@ import tech.loucianus.im.service.BulletinService
 @RequestMapping("/bulletin")
 class BulletinController {
 
-    companion object {
-        private val log = LogFactory.getLog(this::class.java)
-    }
-
     @Autowired @Lazy lateinit var bulletinService: BulletinService
 
     /**
-     * Get Bulletin
+     * Get Bulletin.
      *
-     * @return Get the last bulletin.
+     * @return The newest bulletin details.
      */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["view"])
     @GetMapping
-    fun getBulletin(): JsonResponse {
-        val bulletin = bulletinService.getBulletin()
-
-        if (log.isInfoEnabled) log.info("bulletin::$bulletin")
-
-        return JsonResponse.ok().message(bulletin)
+    fun getBulletin(): JsonResponse  {
+        val result = bulletinService.getBulletin()
+        return JsonResponse.ok().message( result )
     }
-
     /**
-     * Save the last Bulletin
+     * Set Bulletin.
      *
-     * @param bulletinDetails the bulletin
-     * @return the result
+     * @param bulletinDetails The bulletin details. See data class [BulletinDetails].
+     * @return If succeed to update, return the success info, otherwise return the exception at service.
+     * @see BulletinService.setBulletin
      */
     @RequiresRoles(value = ["manager"],logical =  Logical.AND)
     @RequiresPermissions(value = ["view","edict"], logical = Logical.AND)
     @PostMapping
     fun setBulletin(@RequestBody @Validated bulletinDetails: BulletinDetails): JsonResponse {
-        if (log.isInfoEnabled) log.info("bulletinDetails::$bulletinDetails")
-        bulletinService.setBulletin(bulletinDetails)
-        return JsonResponse.ok().message("Succeed to Save The Bulletin.")
+
+        val result = bulletinService.setBulletin( bulletinDetails )
+
+        return JsonResponse.ok().message( result )
+
     }
 }

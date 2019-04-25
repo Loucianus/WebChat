@@ -25,15 +25,12 @@ class FileServiceImpl: FileService {
 
     companion object {
         private val log = LogFactory.getLog(this::class.java)
-        private const val localPath = "/home/citrine/files/"
+
+        private const val localPath = "F:/files"
     }
 
     @Autowired @Lazy lateinit var fileRepository: FileRepository
 
-
-    override fun getFileList(): Page<FileList> {
-        return fileRepository.findFileList()
-    }
 
     override fun deleteFileById(id: Int): Boolean {
         val filepath = fileRepository.findFilePathById(id)
@@ -47,19 +44,13 @@ class FileServiceImpl: FileService {
         return fileRepository.deleteFileById(id) == 1
     }
 
-    override fun searchFile(filename: String): Page<File> {
-        return fileRepository.findFileLikeFilename(filename)
+    override fun searchFile(filename: String, uid: Int): Page<FileList> {
+        return fileRepository.findFileLikeFilename(filename, uid)
     }
 
-    override fun getFIleByPath(path: String): String {
-        return fileRepository.findFileByPath(path)
-    }
 
-    override fun setFile(file: File) {
-        fileRepository.saveFile(file)
-    }
 
-    override fun upload(file: MultipartFile, uid: Int): Boolean {
+    override fun upload(file: MultipartFile, uid: Int, toId: Int): File {
 
         if (log.isInfoEnabled) log.info("filename::${file.originalFilename}")
 
@@ -70,38 +61,43 @@ class FileServiceImpl: FileService {
         val filename = FileUtil.getNewFileName(file.originalFilename!!)
 
         return if (FileUtil.upload(file, localPath, filename)) {
-            setFile(
+            fileRepository.saveFile(
                 File(
-                    id = 0,
-                    filename = file.originalFilename!!,
-                    filepath = "$localPath$filename",
-                    uploadWorker = uid
+                        id = 0,
+                        filename = file.originalFilename!!,
+                        filepath = "$localPath/$filename",
+                        uploadWorker = uid,
+                        toId = toId
                 )
             )
-            true
+            fileRepository.findFileByFullPath("$localPath/$filename")
         } else {
-            false
+            File()
         }
     }
 
-    override fun download(request: HttpServletRequest, response: HttpServletResponse,absoluteName: String ) {
+    override fun download(request: HttpServletRequest, response: HttpServletResponse,fileId: Int ) {
         //通过response输出流将文件传递到浏览器
         //1、获取文件路径
         //2.构建一个文件通过Paths工具类获取一个Path对象
-        val path = Paths.get(absoluteName)
+
+        val fileDetails = fileRepository.findFileById(fileId)
+
+        val path = Paths.get(fileDetails.filepath)
+
         //判断文件是否存在
         if (Files.exists(path)) {
             //存在则下载
             //通过response设定他的响应类型
             //4.获取文件的后缀名
-            val fileSuffix = FileUtil.getSuffix(absoluteName)
+            val fileSuffix = FileUtil.getSuffix(fileDetails.filename)
             //            5.设置contentType ,只有指定contentType才能下载
             response.contentType = "application/$fileSuffix"
             //            6.添加http头信息
             //            因为fileName的编码格式是UTF-8 但是http头信息只识别 ISO8859-1 的编码格式
             //            因此要对fileName重新编码
             try {
-                val downFileName = getFIleByPath(absoluteName)
+                val downFileName = fileDetails.filename
                 response.addHeader(
                     "Content-Disposition",
                     "attachment;filename=" + String(downFileName.toByteArray(charset("UTF-8")), Charset.forName("ISO8859-1"))
@@ -113,10 +109,13 @@ class FileServiceImpl: FileService {
             try {
                 Files.copy(path, response.outputStream)
             } catch (e: IOException) {
+                if (log.isInfoEnabled)
+                    log.info("下载失败(IOExp)......")
                 throw IOException("下载失败")
             }
-
-            log.info("下载完成")
+        } else {
+            throw CustomNotFoundException("文件不存在")
         }
     }
+
 }

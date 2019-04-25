@@ -22,53 +22,56 @@ import javax.servlet.http.HttpServletResponse
 @RequestMapping("/file")
 class FileController {
 
-    companion object {
-        private val log = LogFactory.getLog(this::class.java)
-    }
-
     @Autowired @Lazy lateinit var fileService: FileService
 
     /**
-     * 分页查询 全部
+     * Get the file list.
+     *
+     * @param pageNo The PageHelper needed.
+     * @param pageSize The PageHelper needed.
+     * @param filename The file name that user wanna to search, default value is empty string.
+     * @param uid The uploader's id.
+     * @return The file details list. Every page shows the max 10 record.
      */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["view"])
-    @GetMapping("/all")
+    @GetMapping("/all/{uid}")
     fun getFiles(@RequestParam(defaultValue = "1") pageNo: Int,
-                 @RequestParam(defaultValue = "10") pageSize: Int): JsonResponse {
+                 @RequestParam(defaultValue = "10") pageSize: Int,
+                 @RequestParam(value = "filename", defaultValue = "") filename: String,
+                 @PathVariable("uid") uid: Int): JsonResponse {
         PageHelper.startPage<FileList>(pageNo, pageSize)
-        val pageInfo = PageInfo<FileList>(fileService.getFileList())
+
+        val pageInfo = PageInfo<FileList>(fileService.searchFile(filename, uid))
+
         return JsonResponse.ok().message(pageInfo)
     }
 
     /**
-     * 分页查询 搜索
-     */
-    @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
-    @RequiresPermissions(value = ["view"])
-    @GetMapping("/{filename}/all")
-    fun searchFile(@RequestParam(defaultValue = "1") pageNo: Int,
-                   @RequestParam(defaultValue = "10") pageSize: Int,
-                   @PathVariable("filename") filename: String): JsonResponse {
-        PageHelper.startPage<File>(pageNo, pageSize)
-        val pageInfo = PageInfo<File>(fileService.searchFile(filename))
-        return JsonResponse.ok().message(pageInfo)
-    }
-
-    /**
-     * 上传文件
+     * Upload the file.
+     *
+     * @param file The File that user uploads.
+     * @param uid Uploader.
+     * @param toId The recipient.
+     * @return If succeed to upload file and save to the database, return true; otherwise false.
+     * @see FileService.upload If has any exception during uploading, throw the IO Exception.
      */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["upload", "view"], logical = Logical.AND)
     @PostMapping
-    fun uploadFile(@RequestParam("file") file: MultipartFile,@RequestParam("uploader_id") uid: Int): JsonResponse {
-        if (log.isInfoEnabled) log.info("upload file")
+    fun uploadFile(@RequestParam("file") file: MultipartFile,
+                   @RequestParam("uploader_id") uid: Int,
+                   @RequestParam("to_id") toId: Int): JsonResponse {
 
-        return JsonResponse.ok().message(fileService.upload(file, uid))
+        return JsonResponse.ok().message(fileService.upload(file, uid, toId))
     }
 
     /**
-     * 下载文件
+     * Download files.
+     *
+     * @param request Network stream needed.
+     * @param response Network stream needed.
+     * @param fileId The file's id at database.
      */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["download", "view"])
@@ -76,18 +79,27 @@ class FileController {
     fun download(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        @RequestParam("fullPath") fullPath: String) {
-        fileService.download(request, response, fullPath)
+        @RequestParam("file_id") fileId: Int) {
+
+        fileService.download(request, response, fileId)
     }
 
     /**
-     * 删除文件
+     * Delete the file.
+     *
+     * Users can delete the file that their uploading.
+     * The Root user can delete any file.
+     *
+     * @param id The file Id.
+     * @see SecurityUtils.getSubject Get the subject of user.Use it to confirm the permission if can delete the file.
      */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["view", "delete"], logical = Logical.OR)
     @DeleteMapping
     fun deleteFile(@RequestParam("file_id") id: Int): JsonResponse {
+
         val subject = SecurityUtils.getSubject()
+
         return if (subject.hasRole("manager") && subject.isPermitted("delete") ) {
             if (fileService.deleteFileById(id)) {
                 JsonResponse.noContent().message("Success to delete.")

@@ -194,6 +194,11 @@ object JsonResponse : Serializable {
         return this
     }
 
+    fun error(data: Any): JsonResponse {
+        this.data = data
+        return this
+    }
+
     fun getMeta() = meta
 
     fun getData() = data

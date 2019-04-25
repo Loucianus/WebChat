@@ -55,7 +55,9 @@ object FileUtil {
     @Throws(IOException::class)
     fun upload(file: MultipartFile, path: String, fileName: String): Boolean {
 
+
         val realPath = "$path/$fileName"
+        log.info(realPath)
 
         val dest = File(realPath)
 

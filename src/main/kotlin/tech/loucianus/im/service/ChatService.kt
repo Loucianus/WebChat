@@ -15,13 +15,17 @@ interface ChatService {
     fun sentToGroup(message: MessageGetter): GroupMessage
 
     /**
-     * Get all chat content file.
+     * Get the newest 10 messages.
      *
      * @param id the getter.
      * @param uid the targeter.
-     * @return the all message of chat.
+     * @return The message list.
      */
     fun getChatFile(id :Int, uid: Int): List<Message>
 
+    /**
+     * Get the newest 10 messages.
+     * @return The group message list.
+     */
     fun getGroupChatFile(): List<GroupMessage>
 }

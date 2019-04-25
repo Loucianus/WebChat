@@ -30,12 +30,13 @@ class ChatServiceImpl: ChatService {
 
         // 完整message信息
         val messageSender = MessageSender(
-            from_id = message.from_id,
-            to_id = message.to_id,
-            name = message.name,
-            content = message.data,
-            date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()),
-            type = message.type
+                from_id = message.from_id,
+                to_id = message.to_id,
+                name = message.name,
+                content = message.data,
+                date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()),
+                type = message.type,
+                filename = message.filename
         )
 
         if (log.isInfoEnabled) {
@@ -57,14 +58,15 @@ class ChatServiceImpl: ChatService {
                 fromId = messageSender.from_id,
                 toId = messageSender.to_id,
                 content = messageSender.content,
-                type = "s",
+                type = messageSender.type,
                 date = Utils.getNowTimestamp(),
                 target = if (messageSender.from_id > messageSender.to_id) {
                             "${messageSender.from_id}#${messageSender.to_id}"
                         } else {
                             "${messageSender.to_id}#${messageSender.from_id}"
                         },
-                isRead = "f"
+                isRead = "f",
+                filename = messageSender.filename
             )
         )
         // 第一参数表示接收信息的用户，第二个是浏览器订阅的地址，第三个是消息本身
@@ -77,23 +79,24 @@ class ChatServiceImpl: ChatService {
 
         messageRepository.saveMessage(
             Message(
-                id = 0,
-                fromId = message.from_id,
-                toId = 0,
-                content = message.data,
-                type = "s",
-                date = Utils.getNowTimestamp(),
-                target = "${message.from_id}#0",
-                isRead = "t"
+                    id = 0,
+                    fromId = message.from_id,
+                    toId = 0,
+                    content = message.data,
+                    type = "s",
+                    date = Utils.getNowTimestamp(),
+                    target = "${message.from_id}#0",
+                    isRead = "t",
+                    filename = ""
             )
         )
 
         return GroupMessage(
-            fromId = message.from_id,
-            content = message.data,
-            type = message.type,
-            date = Timestamp(System.currentTimeMillis()),
-            name = message.name
+                fromId = message.from_id,
+                content = message.data,
+                type = message.type,
+                date = Timestamp(System.currentTimeMillis()),
+                name = message.name
         )
     }
 

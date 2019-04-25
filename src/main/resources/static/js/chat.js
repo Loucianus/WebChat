@@ -40,15 +40,15 @@ function connect() {
     stompClient.connect({}, function () {
         sessionId = /\/([^\/]+)\/websocket/.exec(socket._transport.url)[1];
         // 群聊
-        stompClient.subscribe('/topic/greetings', function (greeting) {
-            handleNotification(greeting)
+        stompClient.subscribe('/topic/group', function (message) {
+            handleNotification(message)
         });
         // 私信
-        stompClient.subscribe('/user/topic/private', function (greeting) {
-            handlePrivate(greeting);
+        stompClient.subscribe('/user/topic/private', function (message) {
+            handlePrivate(message);
         });
         // 在线用户列表
-        stompClient.subscribe('/topic/userlist', function (greeting) {
+        stompClient.subscribe('/topic/contacts', function (message) {
 
         });
     });
@@ -74,7 +74,6 @@ $().ready(function () {
     fetch(url, general)
         .then(result => { return result.json() })
         .then(function (result) {
-            console.log("result:" + (result.data));
             setContactList(result.data)
         })
         .catch(error => console.log(error));
@@ -88,7 +87,6 @@ $().ready(function () {
  * @param data
  */
 function setContactList(data) {
-    console.log("ContactList:" + JSON.stringify(data));
     let html = '';
     for (let i=0, len = data.length;i < len; i++) {
         /** @namespace data.portrait */
@@ -116,9 +114,11 @@ function chatTO(data) {
     let id = $("#chat-to-id-hide");
 
     if (parseInt(data.id) === 0) {
+        $("#send-file-icon").hide();
         chat_name.removeAttr("onclick");
         $("#info-dropdown-menu").attr("style", "display:none")
     } else {
+        $("#send-file-icon").show();
         chat_name.attr("onclick", "getWorkerInfo()");
         $("#info-dropdown-menu").removeAttr("style");
     }
@@ -135,7 +135,6 @@ function chatTO(data) {
  * @param uid
  */
 function getChatFile(id, uid) {
-    console.log("id : " + id + " | uid : " + uid);
     const url = 'chatfile?id=' + id + "&uid=" + uid;
 
     const general = {
@@ -148,7 +147,7 @@ function getChatFile(id, uid) {
         .then(function (result) {
             console.log("file get::" + result.meta.status);
             if (result.meta.status === 200) {
-                for (let i = 0, len = result.data.length; i < len; i++) {
+                for (let i = result.data.length-1; i >= 0; i--) {
                     showChatContent(JSON.stringify(result.data[i]), uid);
                 }
             } else if (result.meta.status === 400) {
@@ -162,7 +161,7 @@ function getChatFile(id, uid) {
 /**
  * 处理发送信息
  */
-$('#send-text').click(function () {
+function sendText () {
 
     let _data = $('#input-text');
 
@@ -173,7 +172,6 @@ $('#send-text').click(function () {
     }
 
     let _to_email = $("#chat-email-hide").html();
-    console.log("to_email" + _to_email);
     if (_to_email === "" || _to_email === null) {
         alert("The chat partner not selected.");
         console.log("Please choose the user to chat.");
@@ -187,22 +185,73 @@ $('#send-text').click(function () {
         "to_email": _to_email,
         "data" : _data.val(),
         "type": 's',
-        "name": $("#worker-name-hide").html()
+        "name": $("#worker-name-hide").html(),
+        "filename": "#"
     };
 
     $("#output").append("<div class='bubble me'>" + _data.val() + "</div>");
     scroll();
     if (parseInt(to_id.html()) !== 0) {
-        console.log("private...");
         stompClient.send("/app/private", {}, JSON.stringify(message));
     } else {
-        console.log("public...");
         stompClient.send("/app/group", {}, JSON.stringify(message));
     }
     _data.val("");
+};
+
+//发送文件
+$("#send-file-btn").click(function () {
+    let _to_email = $("#chat-email-hide").html();
+    if (_to_email === "" || _to_email === null) {
+        alert("The chat partner not selected.");
+        console.log("Please choose the user to chat.");
+        return;
+    }
+    let to_id = $("#chat-to-id-hide");
+    let file = $('#upload-file-id-send').prop("files");
+    let data = new FormData();
+    data.append('file',file[0]);
+
+    $.ajax({
+        type: METHOD_POST,
+        url: "file?uploader_id=" + $("#worker-uid").html() + "&to_id=" + parseInt(to_id.html()),
+        data: data,
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (ret) {
+            console.log(ret);
+
+
+            let message = {
+                "to_id" : parseInt(to_id.html()),
+                "from_id": parseInt(uid.text().trim()),
+                "to_email": _to_email,
+                "data" : ret.data.id,
+                "type": 'f',
+                "name": $("#worker-name-hide").html(),
+                "filename" : ret.data.filename
+            };
+
+            $("#output").append("<a href='#' class='bubble me' onclick='downloadFile("+ ret.data.id +")'>文件:[" + ret.data.filename + "]</a>");
+            scroll();
+            if (parseInt(to_id.html()) !== 0) {
+                stompClient.send("/app/private", {}, JSON.stringify(message));
+            } else {
+                stompClient.send("/app/group", {}, JSON.stringify(message));
+            }
+
+        }
+    });
+
 
 });
 
+function keySend(event) {
+    if (event.ctrlKey && event.keyCode === 13) {
+        sendText()
+    }
+}
 
 /**
  * 私聊收到消息展示
@@ -211,12 +260,16 @@ $('#send-text').click(function () {
 function handlePrivate(message) {
     let to_id = $("#chat-to-id-hide");
     let msg = JSON.parse(message.body);
-    console.log("to-id : " + to_id.html() + " | msg-id : " + msg.from_id + " | msg-to : " + msg.to_id);
-    console.log("message.body" + JSON.stringify(msg));
     if (parseInt(to_id.html()) === msg.from_id) {
-        $("#output").append(
-            "<div class='bubble you'>" + msg.content + "</div>"
-        );
+        if (msg.type === "s") {
+            $("#output").append(
+                "<div class='bubble you'>" + msg.content + "</div>"
+            );
+        } else if (msg.type === "f") {
+            $("#output").append(
+                "<a href='#' class='bubble you' onclick='downloadFile("+ msg.content +")'>文件:[" + msg.filename + "]</a>"
+            );
+        }
     }
     scroll();
 }
@@ -226,7 +279,6 @@ function handlePrivate(message) {
  */
 function handleNotification(message) {
     let msg = JSON.parse(message.body);
-    console.log("message.body" + msg.data.fromId !== parseInt(uid.html()));
     let to_id = $("#chat-to-id-hide");
     /** @namespace msg.data.fromID */
     if (0 === parseInt(to_id.html()) && parseInt(msg.data.fromId) !== parseInt(uid.html())) {
@@ -246,16 +298,34 @@ function showChatContent(message, uid) {
     let msg = JSON.parse(message);
     /** @namespace msg.fromId */
     if (msg.fromId === uid){
-        $('#output').append("<div class='bubble me'>" + msg.content + "</div>");
+        // $('#output').append("<div class='bubble me'>" + msg.content + "</div>");
+
+        if (msg.type === "s") {
+            $("#output").append(
+                "<div class='bubble me'>" + msg.content + "</div>"
+            );
+        } else if (msg.type === "f") {
+            $("#output").append(
+                "<a href='#' class='bubble me' onclick='downloadFile("+ msg.content +")'>文件:[" + msg.filename + "]</a>"
+            );
+        }
     } else {
     /** @namespace msg.toId */
         if (typeof (msg.toId) === 'undefined') {
 
-            $('#output').append(
-                "<div class='bubble you'>" +"[" + msg.name + "]:    " +msg.content + "</div>")
+            $('#output').append("<div class='bubble you'>" +"[" + msg.name + "]:    " +msg.content + "</div>")
 
         } else {
-            $('#output').append("<div class='bubble you'>" + msg.content + "</div>");
+            // $('#output').append("<div class='bubble you'>" + msg.content + "</div>");
+            if (msg.type === "s") {
+                $("#output").append(
+                    "<div class='bubble you'>" + msg.content + "</div>"
+                );
+            } else if (msg.type === "f") {
+                $("#output").append(
+                    "<a href='#' class='bubble you' onclick='downloadFile("+ msg.content +")'>文件:[" + msg.filename + "]</a>"
+                );
+            }
         }
     }
     scroll()
@@ -270,3 +340,67 @@ function scroll() {
     div.scrollTop(top);
 }
 
+function getHistory() {
+    $("#history").html("");
+    let to_id = parseInt($("#chat-to-id-hide").html());
+    let id = parseInt(uid.text().trim());
+    let url = "message/history?id=" + to_id + "&uid=" + id;
+
+    const general = {
+        headers: HEADERS_JSON,
+        method: METHOD_GET
+    };
+
+    fetch(url, general)
+        .then(response => { return response.json() })
+        .then(function (result) {
+            console.log("file get::" + result.meta.status);
+            if (result.meta.status === 200) {
+
+                for (let i = 0; i < result.data.length; i++) {
+                    // console.log("result:" + JSON.stringify(result.data[i]));
+                    showHistoryContent(JSON.stringify(result.data[i]), id);
+                }
+            } else if (result.meta.status === 400) {
+                console.log("Had not chatted with him.")
+            }
+        })
+        .catch(error => console.log(error));
+}
+
+function showHistoryContent(message, uid) {
+
+    let msg = JSON.parse(message);
+    /** @namespace msg.fromId */
+    if (msg.fromId === uid){
+        // $('#output').append("<div class='bubble me'>" + msg.content + "</div>");
+
+        if (msg.type === "s") {
+            $("#history").append(
+                "<div class='bubble me'>" + msg.content + "</div>"
+            );
+        } else if (msg.type === "f") {
+            $("#history").append(
+                "<a href='#' class='bubble me' onclick='downloadFile("+ msg.content +")'>文件:[" + msg.filename + "]</a>"
+            );
+        }
+    } else {
+        /** @namespace msg.toId */
+        if (typeof (msg.toId) === 'undefined') {
+
+            $('#history').append("<div class='bubble you'>" +"[" + msg.name + "]:    " +msg.content + "</div>")
+
+        } else {
+            // $('#output').append("<div class='bubble you'>" + msg.content + "</div>");
+            if (msg.type === "s") {
+                $("#history").append(
+                    "<div class='bubble you'>" + msg.content + "</div>"
+                );
+            } else if (msg.type === "f") {
+                $("#history").append(
+                    "<a href='#' class='bubble you' onclick='downloadFile("+ msg.content +")'>文件:[" + msg.filename + "]</a>"
+                );
+            }
+        }
+    }
+}

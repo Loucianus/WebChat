@@ -7,7 +7,6 @@ const permission = $("#worker-permission-hide").html().toString();
 const METHOD_GET = "GET";
 const METHOD_POST = "POST";
 const METHOD_DELETE = "DELETE";
-const METHOD_PUT = "PUT";
 
 const HEADERS_JSON = new Headers({
     "Content-Type":"application/json;charset=UTF-8"
@@ -20,38 +19,30 @@ const HEADERS_JSON = new Headers({
 function viewFile() {
     console.log("Get Files...");
 
-    const url = '/file/all';
-
-    const headers = new Headers({
-        "Content-Type":"application/json;charset=UTF-8"
-    });
-
-    const method = "GET";
+    const url = '/file/all/' + parseInt($("#worker-uid").html());
 
     const general = {
-        headers: headers,
-        method: method
+        headers: HEADERS_JSON,
+        method: METHOD_GET
     };
 
     fetch(url, general)
         .then(response => { return response.json() })
         .then(function (result) {
-            console.log(result.data);
             setFileList(result.data);
-            setFileNav(result.data);
+            setFileNav(result.data, "");
         })
         .catch(error => console.log(error));
 
 }
 // 显示文件列表
 function setFileList(data) {
-
     if (role === "" || typeof role === "undefined" ) {
         if (role !== "worker" && role !== 'manager')
         alert("Role: " + role + " Has No PERMISSION To Download File.");
         return;
     }
-
+    console.log(data);
     let list = data.list;
     let html = '';
     for (let i=0, len = list.length;i < len; i++) {
@@ -62,28 +53,27 @@ function setFileList(data) {
             "<th class='text-left' scope='row'>" + num + "</th>" +
             "<td class='text-left'>" + list[i].filename + "</td>" +
             "<td class='text-center'>" + new Date(list[i].uploadDate).Format("yyyy-MM-dd") + "</td>" +
-            "<td class='text-center'>" + list[i].name +"</td>" +
+            "<td class='text-center'>" + list[i].name +"</td>" ;
             /** @namespace data.downloadTimes */
-            "<td class='text-center'>" + list[i].downloadTimes +"</td>";
+            // "<td class='text-center'>" + list[i].downloadTimes +"</td>";
         if (role === 'worker') {
             /** @namespace data.uploaderId */
             if (list[i].email === $("#worker-email-hide").html()) {
                 /** @namespace list.fileId */
-                html += "<td><row><button type='button' class='btn btn-outline-primary btn-sm col-sm-6' onclick='downloadFile(" + JSON.stringify(list[i]) + ")'>Download</button><button type='button' class='btn btn-outline-danger btn-sm col-sm-6' onclick='deleteFile(" + list[i].fileId + ")'>Delete</button></row></td>"
+                html += "<td><row><button type='button' class='btn btn-outline-primary btn-sm col-sm-6' onclick='downloadFile(" + list[i].fileId + ")'>Download</button><button type='button' class='btn btn-outline-danger btn-sm col-sm-6' onclick='deleteFile(" + list[i].fileId + ")'>Delete</button></row></td>"
             } else {
-                html += "<td><row><div class='com-sm-6'></div><button type='button' class='btn btn-outline-primary btn-sm col-sm-6' onclick='downloadFile(" + JSON.stringify(list[i]) + ")'>Download</button></td>"
+                html += "<td><row><button type='button' class='btn btn-outline-primary btn-sm' onclick='downloadFile(" + list[i].fileId + ")'>Download</button></td>"
             }
         } else if (role === 'manager') {
-            html += "<td><row><button type='button' class='btn btn-outline-primary btn-sm col-sm-6' onclick='downloadFile(" + JSON.stringify(list[i]) + ")'>Download</button><button type='button' class='btn btn-outline-danger btn-sm col-sm-6' onclick='deleteFile(" + list[i].fileId + ")'>Delete</button></row></td>"
+            html += "<td><row><button type='button' class='btn btn-outline-primary btn-sm col-sm-6' onclick='downloadFile(" + list[i].fileId + ")'>Download</button><button type='button' class='btn btn-outline-danger btn-sm col-sm-6' onclick='deleteFile(" + list[i].fileId + ")'>Delete</button></row></td>"
         }
         html += "</row></tr>";
         $("#file-list").html( html );
     }
 
-
 }
 // 文件的翻页
-function setFileNav(data) {
+function setFileNav(data,filename) {
 
     console.log("nav pre:" + data.prePage);
     console.log("nav next:" + data.nextPage);
@@ -91,7 +81,7 @@ function setFileNav(data) {
     let html = "";
     /** @namespace data.prePage */
     if (data.prePage > 0) {
-        html += "<li id='prePage' class='page-item'><a class='page-link' onclick='jump("+ data.prePage + ")'>Previous</a></li>";
+        html += "<li id='prePage' class='page-item'><a class='page-link' onclick='jump("+ data.prePage+ "," + filename + ")'>Previous</a></li>";
     }
 
     /** @namespace data.pageNum */
@@ -99,49 +89,38 @@ function setFileNav(data) {
 
     /** @namespace data.nextPage */
     /** @namespace data.navigatePages */
-    if (data.nextPage !== 0) {
-        html += "<li id='nextPage' class='page-item'><a class='page-link' onclick='jump(" + data.nextPage + ")'>Next</a></li>";
+    if (parseInt(data.nextPage) !== 0) {
+        html += "<li id='nextPage' class='page-item'><a class='page-link' onclick='jump(" + data.nextPage +"," + filename + ")'>Next</a></li>";
     }
 
     $("#file-nav").html( html );
 }
 // 文件页面的跳转
-function jump(data) {
+function jump(data, filename) {
 
     if (data.prePage === 0 || data.nextPage === data.navigatePages + 1) {
         return '';
     } else {
-        console.log("Get Files...");
 
-        const url = '/file/all?pageNo=' + data;
-
-        const headers = new Headers({
-            "Content-Type":"application/json;charset=UTF-8"
-        });
-
-        const method = "GET";
+        const url = "/file/all/" + parseInt($("#worker-uid").html()) + "?pageNo=" + data + "&filename=" + filename;
 
         const general = {
-            headers: headers,
-            method: method
+            headers: HEADERS_JSON,
+            method: METHOD_GET
         };
 
         fetch(url, general)
             .then(response => { return response.json() })
             .then(function (result) {
-                console.log(result.data);
-                setFileList(result.data.list);
+                setFileList(result.data);
                 setFileNav(result.data)
             })
             .catch(error => console.log(error));
-
-        console.log("Web loaded!!");
     }
 }
 // 文件的下载
-function downloadFile(file) {
-    /** @namespace file.fullPath */
-    window.location.href = "file?fullPath=" + file.fullPath
+function downloadFile(fid) {
+    window.location.href = 'file?file_id=' + parseInt(fid);
 }
 // 文件的删除
 function deleteFile(id) {
@@ -173,17 +152,39 @@ function uploadFile() {
     data.append('file',file[0]);
 
     $.ajax({
-        type: 'POST',
-        url: "file?uploader_id=" + $("#worker-uid").html(),
+        type: METHOD_POST,
+        url: "file?uploader_id=" + $("#worker-uid").html() + "&to_id=0",
         data: data,
         cache: false,
         processData: false,
         contentType: false,
         success: function (ret) {
-            alert(ret);
+            alert("上传完成..");
+            // return ret.data
         }
     });
 
+}
+// 文件搜索
+function searchFile() {
+    console.log("Get Files...");
+
+    let search = $("#search-file").val();
+
+    const url = '/file/all/' + parseInt($("#worker-uid").html()) + "?filename=" + search;
+
+    const general = {
+        headers: HEADERS_JSON,
+        method: METHOD_GET
+    };
+
+    fetch(url, general)
+        .then(response => { return response.json() })
+        .then(function (result) {
+            setFileList(result.data);
+            setFileNav(result.data, search);
+        })
+        .catch(error => console.log(error));
 }
 
 /**
@@ -262,7 +263,6 @@ function getWorkerInfo() {
     }
 
     const url = "worker/info/" + id;
-    console.log("url" + url);
     const general = {
         headers: HEADERS_JSON,
         method: METHOD_GET
@@ -276,27 +276,28 @@ function getWorkerInfo() {
             if (result.meta.status === 200) {
                 let data = result.data;
                 let email =$("#chat-email");
-                email.html("Email&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;" + data.email);
+                email.html("邮箱&nbsp;&nbsp;:&nbsp;&nbsp;" + data.email);
                 email.attr("href", "mailto:" + data.email);
                 if (data.gender === "f")
-                    $("#chat-gender").html("Gender&nbsp;&nbsp;:&nbsp;&nbsp;Female");
+                    $("#chat-gender").html("性别&nbsp;&nbsp;:&nbsp;&nbsp;女性");
                 else if (data.gender === "m")
-                    $("#chat-gender").html("Gender&nbsp;&nbsp;:&nbsp;&nbsp;Male");
-                else $("#chat-gender").html("Gender : Unknow");
-                $("#chat-role").html("Role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;" + data.role);
-                $("#chat-name").html("Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;" + data.name);
+                    $("#chat-gender").html("性别&nbsp;&nbsp;:&nbsp;&nbsp;男性");
+                else $("#chat-gender").html("性别&nbsp;&nbsp;:&nbsp;&nbsp;未知");
+                $("#chat-role").html("权限&nbsp;&nbsp;:&nbsp;&nbsp;" + data.role);
+                $("#chat-name").html("姓名&nbsp;&nbsp;:&nbsp;&nbsp;" + data.name);
                 if (data.status === "i") {
-                    $("#chat-status").html("Status&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;Incumbency")
+                    $("#chat-status").html("状态&nbsp;&nbsp;:&nbsp;&nbsp;在职")
                 } else if (data.status === "q") {
-                    $("#chat-status").html("Status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Quit")
+                    $("#chat-status").html("状态&nbsp;&nbsp;&nbsp;&nbsp;离职")
                 } else if (data.status === "v") {
-                    $("#chat-status").html("Status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;Vacation")
+                    $("#chat-status").html("状态&nbsp;&nbsp;:&nbsp;&nbsp;休假")
                 } else {
-                    $("#chat-status").html("Status&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;Unknow")
+                    $("#chat-status").html("状态&nbsp;&nbsp;:&nbsp;&nbsp;未知")
                 }
             }
         })
         .catch(error => console.log(error));
+
 }
 // 添加用户的联级selector的实现
 let add_role_select = $("#add-worker-role-select");
@@ -311,8 +312,14 @@ add_role_select.change(function () {
 function addWorker() {
     let name = $("#add-worker-name-input").val();
     let email = $("#add-worker-email-input").val();
+    let gender = $("#add-worker-gender-select").val();
     let role = add_role_select.val();
-    let permission = $("#add-worker-permission-select").val();
+    let _permission = $("#add-worker-permission-select").val();
+
+    if (_permission === "view#edict#download#upload#update#delete" && permission === "view#edict#download#upload#update") {
+        alert("没有权限去创建超级管理员");
+        return;
+    }
 
     const url = "worker";
     let body = {};
@@ -322,14 +329,16 @@ function addWorker() {
             "name" : name,
             "email" : email,
             "role" : role,
-            "permission" : permission
+            "permission" : _permission,
+            "gender": gender
         };
     } else if (role === "worker") {
         body = {
             "name" : name,
             "email" : email,
             "role" : role,
-            "permission" : ""
+            "gender": gender,
+            "permission": ""
         };
     }
 
@@ -355,6 +364,73 @@ function addWorker() {
             }
         })
         .catch(err => console.log(err))
+}
+
+function edictWorkerPermission() {
+    let id =parseInt($("#chat-to-id-hide").html().toString());
+    if (id === 0) {
+        return
+    }
+    let status = $("#worker-permission-status-select").val();
+    let role = $("#worker-permission-role-select").val();
+    let _permission = $("#worker-permission-permission-select").val();
+
+    if (_permission === "view#edict#download#upload#update#delete" && permission === "view#edict#download#upload#update") {
+        alert("没有权限更改用户为超级管理员");
+        return;
+    }
+
+    let body = {};
+    if (role === "manager") {
+        body = {
+            "id":id,
+            "status": status,
+            "role" : role,
+            "permission" : _permission,
+        };
+    } else if (role === "worker") {
+        body = {
+            "id": id,
+            "status": status,
+            "role" : role,
+            "permission": "",
+        };
+    }
+
+    const url = "worker/permission";
+
+    const general = {
+        headers: HEADERS_JSON,
+        method: METHOD_POST,
+        body: JSON.stringify(body)
+    };
+
+    fetch(url, general)
+        .then(response => { return response.json() })
+        .then(function (result) {
+            if (result.data === true) {
+                alert("修改成功!")
+            } else {
+                alert("没有权限修改此用户.")
+            }
+
+        })
+        .catch(error => console.log(error));
+
+}
+
+// 用户权限更改
+let worker_permission_role_select = $("#worker-permission-role-select");
+worker_permission_role_select.change(function () {
+    if (worker_permission_role_select.val() === "manager") {
+        $("#worker-permission-permission-form").show();
+    } else {
+        $("#worker-permission-permission-form").hide();
+    }
+});
+
+function edictWorkerInfo() {
+
 }
 
 /**

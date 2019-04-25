@@ -14,82 +14,76 @@ import tech.loucianus.im.model.dao.WorkerUpdater
 import tech.loucianus.im.service.WorkerService
 
 @RestController
+@RequestMapping()
 class WorkerController {
-
-    companion object {
-        private val log = LogFactory.getLog(this::class.java)
-    }
 
     @Autowired
     lateinit var workerService: WorkerService
 
     /**
-     * 添加用户
+     * Add a new user to database.
+     *
+     * @param workerStorer The details of user.
+     * @return If succeed to save user into database, return true; otherwise return false.
+     * @see WorkerService.setWorker
      */
     @RequiresRoles(value = ["manager"])
     @RequiresPermissions(value = ["update", "view"], logical = Logical.AND)
     @PostMapping("/worker")
     fun addOneWorker(@RequestBody @Validated workerStorer : WorkerStorer):JsonResponse {
-        if (log.isInfoEnabled)
-            log.info("Add a worker : $workerStorer")
-        return JsonResponse.ok().message(workerService.setWorker(workerStorer))
-    }
 
-    @RequiresRoles(value = ["manager"])
-    @RequiresPermissions(value = ["update", "view"], logical = Logical.AND)
-    @PostMapping("/workers")
-    fun addOWorkers(@RequestBody @Validated workerStorerList : List<WorkerStorer>):JsonResponse {
-        if (log.isInfoEnabled)
-            log.info("Add a worker : $workerStorerList")
-        return JsonResponse.ok().message(workerService.setWorkers(workerStorerList))
-    }
+        val result = workerService.setWorker(workerStorer)
 
-    @RequiresRoles(value = ["manager","worker"], logical = Logical.OR)
-    @RequiresPermissions(value = ["update", "edict"], logical = Logical.OR)
-    @PutMapping("/worker")
-    fun updateWorker(@RequestBody @Validated workerUpdater: WorkerUpdater):JsonResponse {
-        if (log.isInfoEnabled)
-            log.info("Add a worker : $workerUpdater")
-        val subject = SecurityUtils.getSubject()
-        return if (subject.hasRole("manager") && subject.isPermitted("update")) {
-            JsonResponse.ok().message(workerService.updateWorkerByAdmin(workerUpdater))
-        } else if (subject.hasRole("worker") && subject.isPermitted("edict")) {
-            val email: String = SecurityUtils.getSubject().principal as String
-            if (email == workerUpdater.email) {
-                JsonResponse.ok().message(workerService.updateWorkerByWorker(workerUpdater))
-            } else {
-                JsonResponse.unauthorized().message("No permission to update other's information.")
-            }
-        } else {
-            JsonResponse.unauthorized().message("Has No Permission to update the information of worker.")
-        }
+        return JsonResponse.ok().message( result )
     }
 
     /**
-     * 获取全部联系人
+     * Update the user's permission.
      *
-     * @return 返回所有联系人
+     * @param workerUpdater The details of user.
+     * @return If succeed to update the user, return true; otherwise false.
+     * @see WorkerService.updateWorkerByAdmin
+     */
+    @RequiresRoles(value = ["manager"])
+    @RequiresPermissions(value = ["update"])
+    @PostMapping("/worker/permission")
+    fun updatePermission(@RequestBody workerUpdater: WorkerUpdater):JsonResponse {
+
+        val result = workerService.updateWorkerByAdmin(workerUpdater)
+
+        return JsonResponse.ok().message( result )
+    }
+
+    /**
+     * Get all contacts.
+     *
+     * @return All contacts.
      */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["view"])
     @GetMapping("/worker/contacts")
     fun getAllContacts(): JsonResponse {
+
         val email: String = SecurityUtils.getSubject().principal as String
-        val contacts = workerService.getContacts(email)
-        if (log.isInfoEnabled) log.info("Get all contacts.")
-        return JsonResponse.ok().message(contacts)
+
+        val result = workerService.getContacts(email)
+
+        return JsonResponse.ok().message( result )
     }
 
     /**
-     * 获取员工信息
+     * Get the details of user.
      *
-     * @param id 用户id
+     * @param id The user id at database.
+     * @return Return the user details.
      */
     @RequiresRoles(value = ["worker", "manager"], logical =  Logical.OR)
     @RequiresPermissions(value = ["view"])
     @GetMapping("/worker/info/{id}")
     fun getOther(@PathVariable("id") id: Int): JsonResponse? {
-        val userInfo = workerService.getWorker(id)
-        return JsonResponse.ok().message(userInfo)
+
+        val result = workerService.getWorker(id)
+
+        return JsonResponse.ok().message( result )
     }
 }

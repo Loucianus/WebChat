@@ -46,6 +46,8 @@ data class Message (
      *
      * f|t false|true
      */
-    val isRead: String
+    val isRead: String,
+
+    val filename: String
 
 ) : Serializable

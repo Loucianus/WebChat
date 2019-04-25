@@ -17,21 +17,11 @@ class MessageServiceImpl: MessageService {
 
     @Autowired lateinit var messageRepository: MessageRepository
 
-    override fun getHistoryMessage(id: Int, uid:Int): Page<Message> {
+    override fun getHistoryMessage(id: Int, uid:Int): List<Message> {
         return messageRepository.findHistoryMessage(id, uid)
     }
 
-    override fun getGroupHistoryMessage(): Page<Message> {
+    override fun getGroupHistoryMessage(): List<Message> {
         return messageRepository.findGroupHistoryMessage()
-    }
-
-    override fun searchMessage(id: Int, uid: Int, msg: String): Page<Message> {
-        val messageList = messageRepository.findMessageByMsg(id, uid, msg)
-        if (log.isInfoEnabled) log.info("messageList::$messageList")
-        return messageList
-    }
-
-    override fun setMessage(message: Message) {
-        messageRepository.saveMessage(message)
     }
 }

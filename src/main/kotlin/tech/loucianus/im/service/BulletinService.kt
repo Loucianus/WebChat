@@ -5,20 +5,21 @@ import tech.loucianus.im.model.vo.BulletinDetails
 interface BulletinService {
 
     /**
-     * Get Bulletin
+     * Get Bulletin.
      *
      * From the database to get the newest bulletin.
      *
-     * @return [BulletinDetails]
+     * @return [BulletinDetails].
      */
     fun getBulletin(): BulletinDetails
 
     /**
-     * Set Bulletin
+     * Set Bulletin.
      *
-     * Get the details of bulletin to save to database
+     * Get the details of bulletin to save to database.
      *
-     * @return If succeed to save the bulletin, return true; otherwise false or throw exp;
+     * @param bulletinDetails See data class [BulletinDetails].
+     * @return If succeed to save the bulletin, return true; otherwise false or throw exp.
      */
     fun setBulletin(bulletinDetails: BulletinDetails): Boolean
 }

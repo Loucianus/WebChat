@@ -8,17 +8,17 @@ data class File (
     /**
      * id
      */
-    val id: Int,
+    val id: Int = 0,
 
     /**
      * file name
      */
-    val filename: String,
+    val filename: String = "",
 
     /**
      * file path
      */
-    val filepath: String,
+    val filepath: String = "",
 
     /**
      * upload date
@@ -33,6 +33,8 @@ data class File (
     /**
      * worker of uploading
      */
-    val uploadWorker: Int
+    val uploadWorker: Int = 0,
+
+    val toId: Int = 0
 
 ) : Serializable

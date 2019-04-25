@@ -32,7 +32,9 @@ data class MessageSender (
     /**
      * type
      */
-    val type: String = ""
+    val type: String = "",
+
+    val filename: String = ""
 
 ) :Serializable {
     override fun toString(): String {

@@ -61,8 +61,8 @@ interface WorkerRepository {
             "where email=#{email}")
     fun getAuthority(@Param("email") email: String): Permission
 
-    @Insert("insert into worker (email, name, role, permission) " +
-            "values (#{email}, #{name}, #{role}, #{permission})")
+    @Insert("insert into worker (email, name, role, permission, gender) " +
+            "values (#{email}, #{name}, #{role}, #{permission}, #{gender})")
     fun saveWorker(workerStorer: WorkerStorer): Int
 
     @Insert("<script>" +
@@ -74,12 +74,7 @@ interface WorkerRepository {
             "</script>")
     fun saveWorkers(workerStorerList: List<WorkerStorer>): Int
 
-    @Update("update worker set role=#{role}, permission=#{permission} " +
-            "where email=#{email}")
+    @Update("update worker set role=#{role}, permission=#{permission}, status=#{status} " +
+            "where id=#{id}")
     fun updateWorkerByAdmin(workerUpdater: WorkerUpdater): Int
-
-    @Update("update worker set name=#{name}, password=#{password}, portrait=#{portrait}, " +
-            "gender=#{gender} " +
-            "where email=#{email}")
-    fun updateWorkerByWorker(workerUpdater: WorkerUpdater): Int
 }
