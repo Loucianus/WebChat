@@ -17,11 +17,7 @@ class BulletinController {
 
     @Autowired @Lazy lateinit var bulletinService: BulletinService
 
-    /**
-     * Get Bulletin.
-     *
-     * @return The newest bulletin details.
-     */
+    // 获取公告
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["view"])
     @GetMapping
@@ -29,13 +25,8 @@ class BulletinController {
         val result = bulletinService.getBulletin()
         return JsonResponse.ok().message( result )
     }
-    /**
-     * Set Bulletin.
-     *
-     * @param bulletinDetails The bulletin details. See data class [BulletinDetails].
-     * @return If succeed to update, return the success info, otherwise return the exception at service.
-     * @see BulletinService.setBulletin
-     */
+
+    // 更新公告
     @RequiresRoles(value = ["manager"],logical =  Logical.AND)
     @RequiresPermissions(value = ["view","edict"], logical = Logical.AND)
     @PostMapping

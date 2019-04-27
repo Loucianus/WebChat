@@ -24,30 +24,10 @@ interface WorkerRepository {
             "where id=#{id} ")
     fun findWorkerById(@Param("id") id: Int): Worker
 
-    @Select("<script>" +
-            "select * from worker where " +
-            "<foreach index='index' collection='list' item='id' separator=','>" +
-            "id=#{id} " +
-            "</foreach>" +
-            "</script>")
-    fun findWorkersById(ids : List<Int>): List<Worker>
-
     @Select("select password " +
             "from worker " +
             "where email=#{email}")
     fun findPasswordByEmail(@Param("email") email: String): String?
-
-    @Select("select id " +
-            "from worker " +
-            "where email=#{email}")
-    fun findIdByEmail(@Param("email") email: String): Int
-
-    @Select("select w.id, w.name, w.portrait , w.email, w.role " +
-            "from worker w " +
-            "where w.id!=#{uid} " +
-            "order by w.name " +
-            "asc")
-    fun findContactsById(@Param("uid") id: Int): List<Contacts>
 
     @Select("select w.id, w.name, w.portrait , w.email, w.role " +
             "from worker w " +
@@ -65,16 +45,13 @@ interface WorkerRepository {
             "values (#{email}, #{name}, #{role}, #{permission}, #{gender})")
     fun saveWorker(workerStorer: WorkerStorer): Int
 
-    @Insert("<script>" +
-            "insert into worker (email, name, role, permission) " +
-            "values " +
-            "<foreach index='index' collection='list' item='worker' separator=','>" +
-            "(#{worker.email}, #{worker.name}, #{worker.role}, #{worker.permission}) " +
-            "</foreach>" +
-            "</script>")
-    fun saveWorkers(workerStorerList: List<WorkerStorer>): Int
-
     @Update("update worker set role=#{role}, permission=#{permission}, status=#{status} " +
             "where id=#{id}")
-    fun updateWorkerByAdmin(workerUpdater: WorkerUpdater): Int
+    fun updateWorkerPermission(workerUpdater: WorkerUpdater): Int
+
+    @Update("update worker set name=#{name}, gender=#{gender}, portrait=#{portrait} where id=#{uid}")
+    fun updateWorkerInfo(@Param("uid")uid: Int,
+                         @Param("name") name: String,
+                         @Param("gender") gender: String,
+                         @Param("portrait") portrait: String): Int
 }

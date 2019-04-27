@@ -19,9 +19,6 @@ class IndexController {
 
     @Autowired lateinit var workerService: WorkerService
 
-    /**
-     * Index page
-     */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["view"])
     @GetMapping("/index")
@@ -34,9 +31,6 @@ class IndexController {
         return "index"
     }
 
-    /**
-     * Login page
-     */
     @GetMapping("/")
     fun loginPage() = "login"
 

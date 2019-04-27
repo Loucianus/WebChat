@@ -2,7 +2,6 @@ package tech.loucianus.im.controller
 
 import com.github.pagehelper.PageHelper
 import com.github.pagehelper.PageInfo
-import org.apache.commons.logging.LogFactory
 import org.apache.shiro.SecurityUtils
 import org.apache.shiro.authz.annotation.Logical
 import org.apache.shiro.authz.annotation.RequiresPermissions
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import tech.loucianus.im.model.JsonResponse
 import tech.loucianus.im.model.vo.FileList
-import tech.loucianus.im.model.po.File
 import tech.loucianus.im.service.FileService
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -24,15 +22,6 @@ class FileController {
 
     @Autowired @Lazy lateinit var fileService: FileService
 
-    /**
-     * Get the file list.
-     *
-     * @param pageNo The PageHelper needed.
-     * @param pageSize The PageHelper needed.
-     * @param filename The file name that user wanna to search, default value is empty string.
-     * @param uid The uploader's id.
-     * @return The file details list. Every page shows the max 10 record.
-     */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["view"])
     @GetMapping("/all/{uid}")
@@ -47,32 +36,20 @@ class FileController {
         return JsonResponse.ok().message(pageInfo)
     }
 
-    /**
-     * Upload the file.
-     *
-     * @param file The File that user uploads.
-     * @param uid Uploader.
-     * @param toId The recipient.
-     * @return If succeed to upload file and save to the database, return true; otherwise false.
-     * @see FileService.upload If has any exception during uploading, throw the IO Exception.
-     */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["upload", "view"], logical = Logical.AND)
     @PostMapping
-    fun uploadFile(@RequestParam("file") file: MultipartFile,
+    fun uploadFile(@RequestParam("file") file: MultipartFile?,
                    @RequestParam("uploader_id") uid: Int,
                    @RequestParam("to_id") toId: Int): JsonResponse {
+
+        if (file == null) {
+            return JsonResponse.methodNotAllowed().message("上传的文件不存在!!!")
+        }
 
         return JsonResponse.ok().message(fileService.upload(file, uid, toId))
     }
 
-    /**
-     * Download files.
-     *
-     * @param request Network stream needed.
-     * @param response Network stream needed.
-     * @param fileId The file's id at database.
-     */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["download", "view"])
     @GetMapping
@@ -84,15 +61,6 @@ class FileController {
         fileService.download(request, response, fileId)
     }
 
-    /**
-     * Delete the file.
-     *
-     * Users can delete the file that their uploading.
-     * The Root user can delete any file.
-     *
-     * @param id The file Id.
-     * @see SecurityUtils.getSubject Get the subject of user.Use it to confirm the permission if can delete the file.
-     */
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["view", "delete"], logical = Logical.OR)
     @DeleteMapping

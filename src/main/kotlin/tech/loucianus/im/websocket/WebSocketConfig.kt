@@ -1,6 +1,5 @@
 package tech.loucianus.im.websocket
 
-import org.apache.commons.logging.LogFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.web.socket.CloseStatus
@@ -12,11 +11,9 @@ import org.springframework.web.socket.handler.WebSocketHandlerDecorator
 @EnableWebSocketMessageBroker
 class WebSocketConfig : WebSocketMessageBrokerConfigurer {
 
-    companion object {
-        private val log = LogFactory.getLog(this::class.java)
-    }
+    var users = HashMap<String, String>()
 
-//    var users = HashMap<String, String>()
+//    @Autowired private lateinit var template: SimpMessagingTemplate
 
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
         config.enableSimpleBroker("/topic")
@@ -34,30 +31,24 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
                 @Throws(Exception::class)
                 override fun afterConnectionEstablished(session: WebSocketSession) {
 //                    users[session.id] = session.principal!!.name
-//                    val user = User(
-//                        name = session.principal!!.name,
-//                        id = session.id,
-//                        online = true
-//                    )
-//                    template!!.convertAndSend("/topic/contacts", JSON.toJSON(user))
-//                    if (log.isInfoEnabled) {
-//                        log.info("sessionId::${users[session.id]}")
-//                        log.info("principal::${session.principal!!.name}")
-//                        log.info("连接成功 ${session.id}")
-//                    }
+
+
+
                     super.afterConnectionEstablished(session)
                 }
 
                 @Throws(Exception::class)
                 override fun afterConnectionClosed(session: WebSocketSession, closeStatus: CloseStatus) {
 //                    users.remove(session.id)
-//                    val user = User(
+
+//                    val user = UserStatus(
 //                        name = session.principal!!.name,
 //                        id = session.id,
 //                        online = false
 //                    )
-//                    template!!.convertAndSend("/topic/contacts", JSON.toJSON(user))
-//                    if (log.isInfoEnabled) log.info("连接成功 ${session.id}")
+
+//                    template.convertAndSend("/topic/contacts", user)
+
                     super.afterConnectionClosed(session, closeStatus)
                 }
             }

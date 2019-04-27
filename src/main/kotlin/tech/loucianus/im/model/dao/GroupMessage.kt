@@ -10,6 +10,10 @@ data class GroupMessage(
 
     val type: String = "s",
 
+    val filename: String = "",
+
+    val isRead: String = "",
+
     val date: Timestamp = Utils.getNowTimestamp(),
 
     val name: String =""

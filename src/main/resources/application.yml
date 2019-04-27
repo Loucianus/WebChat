@@ -29,7 +29,6 @@ spring:
       max-request-size: 128MB
       enabled: true
 
-
 # mybatis
 mybatis.configuration.mapUnderscoreToCamelCase: true
 

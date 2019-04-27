@@ -13,6 +13,8 @@ import org.apache.shiro.authc.UsernamePasswordToken
 import org.apache.shiro.authz.annotation.Logical
 import org.apache.shiro.authz.annotation.RequiresPermissions
 import org.apache.shiro.authz.annotation.RequiresRoles
+import org.springframework.beans.factory.annotation.Autowired
+import tech.loucianus.im.service.WorkerService
 
 @RestController
 @RequestMapping("/token")
@@ -22,17 +24,8 @@ class TokenController {
         private val log = LogFactory.getLog(this::class.java)
     }
 
-    /**
-     * <p>Performing Landing Operation.</p>
-     *
-     * Determine the validity of account. If valid, would execute authorization to login.
-     * Subject was Created from SecurityUtils and put a token created by UsernamePasswordToken.
-     * Finally, execute to land.
-     * @param account Only username and password.
-     * @param errors Determine if the the account was invalid.
-     * @return Json of land Succeed.
-     * @throws CustomNotFoundException "Account error.(Username or Password Format Invalid.)"
-     */
+    @Autowired lateinit var workerService: WorkerService
+
     @PostMapping(consumes = ["application/json"], produces = ["application/json"])
     fun login(@RequestBody @Validated account: Account,
               errors: Errors): JsonResponse {
@@ -49,18 +42,13 @@ class TokenController {
 
             // 执行认证登陆
             subject.login(token)
-
-            return JsonResponse.ok().message("Success to Login!!")
+            val worker = workerService.getWorker(account.username)
+            return JsonResponse.ok().message(worker.id)
         }
 
         throw CustomNotFoundException("Account error.(Username or Password Invalid.)")
     }
 
-    /**
-     * <p>Performing Logout Operation.</p>
-     *
-     * Get the Subject of user and execute to logout.
-     */
     @RequiresRoles(value= ["worker", "manager"], logical = Logical.OR)
     @RequiresPermissions(value = ["view"])
     @DeleteMapping

@@ -1,40 +1,15 @@
 const uid = $("#worker-uid");
+let lastId = 0;
+let nowId = 0;
 
-let friends = {
-        list: document.querySelector('ul.people'),
-        all: document.querySelectorAll('.left .person'),
-        name: '' },
-
-    chat = {
-        container: document.querySelector('.container .right'),
-        current: null,
-        person: null,
-        name: document.querySelector('.container .right .top .name') };
-
-
-friends.all.forEach(function (f) {
-    f.addEventListener('mousedown', function () {
-        f.classList.contains('active') || setActiveChat(f);
-    });
-});
-
-function setActiveChat(f) {
-    friends.list.querySelector('.active').classList.remove('active');
-    f.classList.add('active');
-    chat.current = chat.container.querySelector('.active-chat');
-    chat.person = f.getAttribute('data-chat');
-    chat.current.classList.remove('active-chat');
-    chat.container.querySelector('[data-chat="' + chat.person + '"]').classList.add('active-chat');
-    friends.name = f.querySelector('.name').innerText;
-    chat.name.innerHTML = friends.name;
-}
+let stompClient = null;
+let sessionId = null;
 
 /**
  * WebSocket
  */
-let stompClient = null;
-let sessionId = null;
 function connect() {
+
     let socket = new SockJS('/gs-guide-websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function () {
@@ -49,17 +24,139 @@ function connect() {
         });
         // 在线用户列表
         stompClient.subscribe('/topic/contacts', function (message) {
-
         });
     });
 }
+// 私聊
+function handlePrivate(message) {
+    let to_id = $("#chat-to-id-hide");
+    let msg = JSON.parse(message.body);
 
-/**
- * Onload
- */
-/**
- * 加载页面信息，获取联系人列表
- */
+    console.log(msg);
+    if (parseInt(to_id.html()) === msg.from_id) {
+        if (msg.type === "s") {
+            $("#output" + msg.from_id +"").append(
+                "<div class='bubble you'>" + msg.content + "</div>"
+            );
+        } else if (msg.type === "f") {
+            $("#output" + msg.from_id +"").append(
+                "<a href='#' class='bubble you' onclick='downloadFile("+ msg.content +")'>文件:[" + msg.filename + "]</a>"
+            );
+        }
+
+        let url = "message?uid=" + parseInt($("#worker-uid").html()) + "&id=" + parseInt(to_id.html());
+        $.get(url)
+    } else {
+        let badge = $("#badge" + msg.from_id +"");
+        console.log(badge);
+        if (badge.html() === "") {
+            badge.html(1)
+        } else {
+            let tmp = parseInt(badge.html());
+            badge.html(tmp + 1)
+        }
+        if (msg.type === "s") {
+            $("#output" + msg.from_id +"").append(
+                "<div class='bubble you'>" + msg.content + "</div>"
+            );
+        } else if (msg.type === "f") {
+            $("#output" + msg.from_id +"").append(
+                "<a href='#' class='bubble you' onclick='downloadFile("+ msg.content +")'>文件:[" + msg.filename + "]</a>"
+            );
+        }
+    }
+    scroll(parseInt(to_id.html()));
+}
+
+// 群聊
+//TODO 改
+function handleNotification(message) {
+    let msg = JSON.parse(message.body);
+    let to_id = $("#chat-to-id-hide");
+    console.log("群聊:" + msg);
+    /** @namespace msg.data.fromID */
+
+    if (parseInt(to_id.html()) === 0) {
+        if (parseInt(msg.data.fromId) !== parseInt(uid.html())) {
+
+            $("#output0").append(
+                "<div class='bubble you'>" + "[" + msg.data.name + "]:    " + msg.data.content + "</div>"
+            );
+        }
+    }
+    else {
+        let badge = $("#badge0");
+        console.log(badge);
+        if (badge.html() === "") {
+            badge.html(1)
+        } else {
+            let tmp = parseInt(badge.html());
+            badge.html(tmp + 1)
+        }
+        $("#output0").append(
+            "<div class='bubble you'>" +"[" + msg.data.name + "]:    " +msg.data.content + "</div>"
+        );
+    }
+    scroll(parseInt(to_id.html()));
+}
+
+// 消息展示
+function showChatContent(message, uid) {
+
+    let msg = JSON.parse(message);
+    // console.log(msg);
+
+    if (msg.fromId === uid) {
+        nowId = msg.toId
+    } else {
+        nowId = msg.fromId
+    }
+
+    if (typeof (msg.toId) === "undefined") {
+        nowId = 0
+    }
+
+    let badge = $("#badge" + parseInt(msg.fromId) +"");
+    if (badge.html() === "") {
+        badge.html(1)
+    } else {
+        let tmp = parseInt(badge.html());
+        badge.html(tmp + 1)
+    }
+
+    /** @namespace msg.fromId */
+    if (msg.fromId === uid){
+
+        if (msg.type === "s") {
+            $("#output" + nowId +"").append(
+                "<div class='bubble me'>" + msg.content + "</div>"
+            );
+        } else if (msg.type === "f") {
+            $("#output" + nowId +"").append(
+                "<a href='#' class='bubble me' onclick='downloadFile("+ msg.content +")'>文件:[" + msg.filename + "]</a>"
+            );
+        }
+    } else {
+        /** @namespace msg.toId */
+        if (typeof (msg.toId) === 'undefined') {
+
+            $("#output" + nowId +"").append("<div class='bubble you'>" +"[" + msg.name + "]:    " +msg.content + "</div>")
+
+        } else {
+            if (msg.type === "s") {
+                $("#output" + nowId +"").append(
+                    "<div class='bubble you'>" + msg.content + "</div>"
+                );
+            } else if (msg.type === "f") {
+                $("#output" + nowId +"").append(
+                    "<a href='#' class='bubble you' onclick='downloadFile("+ msg.content +")'>文件:[" + msg.filename + "]</a>"
+                );
+            }
+        }
+    }
+}
+
+// 加载页面时获取联系人信息
 $().ready(function () {
 
     console.log("Get Contacts...");
@@ -74,7 +171,7 @@ $().ready(function () {
     fetch(url, general)
         .then(result => { return result.json() })
         .then(function (result) {
-            setContactList(result.data)
+            setContactList(result.data);
         })
         .catch(error => console.log(error));
 
@@ -82,36 +179,47 @@ $().ready(function () {
 
 });
 
-/**
- * 显示人员列表
- * @param data
- */
+// 显示联系人列表
 function setContactList(data) {
     let html = '';
     for (let i=0, len = data.length;i < len; i++) {
         /** @namespace data.portrait */
-        html += "<div id='person" + data[i].id +"' class='person' data-chat='person" + data[i].id +"' onclick='chatTO(" + JSON.stringify(data[i]) + ")'>" +
+        let body = {
+            "id":data[i].id,
+            "name": data[i].name,
+            "email": data[i].email
+        };
+        html += "<div class='person' data-chat='person" + data[i].id +"' onclick='chatTO(" + JSON.stringify(body) + ")'>" +
             "<img src='" + data[i].portrait + "' alt='' />" +
             "<span class='name'>" + data[i].name + "</span>" +
             "<span id='badge" + data[i].id + "' class='time badge pull-right'></span>" +
             "<span class='preview'>" + data[i].role + "</span>" +
             "</div>";
+        $("#message-body").append("<div id='output" + data[i].id +"' class='scroll scroll-chat'></div>");
+        $("#output" + data[i].id +"").hide();
+        // console.log(data[i].id);
+        // here
+        getChatFile(parseInt(data[i].id), parseInt(uid.text().trim()));
     }
     $("#contact-list").append( html );
 }
 
-/**
- * 选择聊天对象
- * @param data
- */
-/** @namespace data.email */
+// 选择聊天对象
 function chatTO(data) {
+
     // 清除聊天信息
-    $('#output').html("");
+    // $("#output"+lastId + "").html("");
     // 设置聊天对象信息
     let chat_name =$("#chat-name-top");
     chat_name.html(data.name);
     let id = $("#chat-to-id-hide");
+
+    let badge = $("#badge" + parseInt(data.id) +"");
+    console.log(badge.html());
+    if (badge.html() !== "") {
+        let url = "message?uid=" + parseInt($("#worker-uid").html()) + "&id=" +parseInt(data.id);
+        $.get(url);
+    }
 
     if (parseInt(data.id) === 0) {
         $("#send-file-icon").hide();
@@ -125,17 +233,16 @@ function chatTO(data) {
 
     $("#chat-email-hide").html(data.email);
     id.html(data.id);
-
-    getChatFile(parseInt(id.html()), parseInt(uid.text().trim()));
+    $("#output"+lastId+"").hide();
+    $("#output"+data.id+"").show();
+    lastId = parseInt(data.id);
+    badge.html("");
+    scroll(parseInt(id.html()))
 }
 
-/**
- * 获取聊天记录
- * @param id
- * @param uid
- */
+// 获取离线消息
 function getChatFile(id, uid) {
-    const url = 'chatfile?id=' + id + "&uid=" + uid;
+    const url = 'message/recent?id=' + id + "&uid=" + uid;
 
     const general = {
         headers: HEADERS_JSON,
@@ -145,8 +252,9 @@ function getChatFile(id, uid) {
     fetch(url, general)
         .then(response => { return response.json() })
         .then(function (result) {
-            console.log("file get::" + result.meta.status);
+            // console.log("file get::" + result.meta.status);
             if (result.meta.status === 200) {
+                console.log("outline::" + JSON.stringify(result.data));
                 for (let i = result.data.length-1; i >= 0; i--) {
                     showChatContent(JSON.stringify(result.data[i]), uid);
                 }
@@ -158,9 +266,7 @@ function getChatFile(id, uid) {
 }
 
 
-/**
- * 处理发送信息
- */
+// 发送文本信息
 function sendText () {
 
     let _data = $('#input-text');
@@ -189,17 +295,17 @@ function sendText () {
         "filename": "#"
     };
 
-    $("#output").append("<div class='bubble me'>" + _data.val() + "</div>");
-    scroll();
+    $("#output" + parseInt(to_id.html()) + "").append("<div class='bubble me'>" + _data.val() + "</div>");
+    scroll(parseInt(to_id.html()));
     if (parseInt(to_id.html()) !== 0) {
         stompClient.send("/app/private", {}, JSON.stringify(message));
     } else {
         stompClient.send("/app/group", {}, JSON.stringify(message));
     }
     _data.val("");
-};
+}
 
-//发送文件
+// 发送文件信息
 $("#send-file-btn").click(function () {
     let _to_email = $("#chat-email-hide").html();
     if (_to_email === "" || _to_email === null) {
@@ -233,8 +339,8 @@ $("#send-file-btn").click(function () {
                 "filename" : ret.data.filename
             };
 
-            $("#output").append("<a href='#' class='bubble me' onclick='downloadFile("+ ret.data.id +")'>文件:[" + ret.data.filename + "]</a>");
-            scroll();
+            $("#output" + parseInt(to_id.html()) + "").append("<a href='#' class='bubble me' onclick='downloadFile("+ ret.data.id +")'>文件:[" + ret.data.filename + "]</a>");
+            scroll(parseInt(to_id.html()));
             if (parseInt(to_id.html()) !== 0) {
                 stompClient.send("/app/private", {}, JSON.stringify(message));
             } else {
@@ -253,93 +359,14 @@ function keySend(event) {
     }
 }
 
-/**
- * 私聊收到消息展示
- * @param message
- */
-function handlePrivate(message) {
-    let to_id = $("#chat-to-id-hide");
-    let msg = JSON.parse(message.body);
-    if (parseInt(to_id.html()) === msg.from_id) {
-        if (msg.type === "s") {
-            $("#output").append(
-                "<div class='bubble you'>" + msg.content + "</div>"
-            );
-        } else if (msg.type === "f") {
-            $("#output").append(
-                "<a href='#' class='bubble you' onclick='downloadFile("+ msg.content +")'>文件:[" + msg.filename + "]</a>"
-            );
-        }
-    }
-    scroll();
-}
-
-/**
- * 群聊收到消息显示
- */
-function handleNotification(message) {
-    let msg = JSON.parse(message.body);
-    let to_id = $("#chat-to-id-hide");
-    /** @namespace msg.data.fromID */
-    if (0 === parseInt(to_id.html()) && parseInt(msg.data.fromId) !== parseInt(uid.html())) {
-        $('#output').append(
-            "<div class='bubble you'>" +"[" + msg.data.name + "]:    " +msg.data.content + "</div>"
-        );
-    }
-    scroll();
-}
-
-/**
- * 展示消息
- * @param message
- * @param uid
- */
-function showChatContent(message, uid) {
-    let msg = JSON.parse(message);
-    /** @namespace msg.fromId */
-    if (msg.fromId === uid){
-        // $('#output').append("<div class='bubble me'>" + msg.content + "</div>");
-
-        if (msg.type === "s") {
-            $("#output").append(
-                "<div class='bubble me'>" + msg.content + "</div>"
-            );
-        } else if (msg.type === "f") {
-            $("#output").append(
-                "<a href='#' class='bubble me' onclick='downloadFile("+ msg.content +")'>文件:[" + msg.filename + "]</a>"
-            );
-        }
-    } else {
-    /** @namespace msg.toId */
-        if (typeof (msg.toId) === 'undefined') {
-
-            $('#output').append("<div class='bubble you'>" +"[" + msg.name + "]:    " +msg.content + "</div>")
-
-        } else {
-            // $('#output').append("<div class='bubble you'>" + msg.content + "</div>");
-            if (msg.type === "s") {
-                $("#output").append(
-                    "<div class='bubble you'>" + msg.content + "</div>"
-                );
-            } else if (msg.type === "f") {
-                $("#output").append(
-                    "<a href='#' class='bubble you' onclick='downloadFile("+ msg.content +")'>文件:[" + msg.filename + "]</a>"
-                );
-            }
-        }
-    }
-    scroll()
-}
-
-/**
- * 滚动
- */
-function scroll() {
-    let div = $("#output");
+// 聊天内容的滚动条
+function scroll(id) {
+    let div = $("#output"+ id +"");
     const top = 500000;
     div.scrollTop(top);
 }
 
+// 获取历史记录
 function getHistory() {
     $("#history").html("");
     let to_id = parseInt($("#chat-to-id-hide").html());
@@ -368,6 +395,7 @@ function getHistory() {
         .catch(error => console.log(error));
 }
 
+// 展示历史记录
 function showHistoryContent(message, uid) {
 
     let msg = JSON.parse(message);

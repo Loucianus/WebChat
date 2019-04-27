@@ -7,7 +7,7 @@ const permission = $("#worker-permission-hide").html().toString();
 const METHOD_GET = "GET";
 const METHOD_POST = "POST";
 const METHOD_DELETE = "DELETE";
-
+const METHOD_PUT = "PUT";
 const HEADERS_JSON = new Headers({
     "Content-Type":"application/json;charset=UTF-8"
 });
@@ -151,6 +151,14 @@ function uploadFile() {
     let data = new FormData();
     data.append('file',file[0]);
 
+    console.log(file);
+    console.log(data);
+
+    if (file.length === 0) {
+        alert("请选择要上传的文件");
+        return;
+    }
+
     $.ajax({
         type: METHOD_POST,
         url: "file?uploader_id=" + $("#worker-uid").html() + "&to_id=0",
@@ -158,9 +166,15 @@ function uploadFile() {
         cache: false,
         processData: false,
         contentType: false,
-        success: function (ret) {
-            alert("上传完成..");
-            // return ret.data
+        success: function (result) {
+            if (result.meta.status === 405) {
+                alert(result.data)
+            } else if (result.meta.status === 200) {
+                alert("上传完成..");
+            } else {
+                console.log(result.data);
+                alert("发生未知错误!!")
+            }
         }
     });
 
@@ -299,7 +313,6 @@ function getWorkerInfo() {
         .catch(error => console.log(error));
 
 }
-// 添加用户的联级selector的实现
 let add_role_select = $("#add-worker-role-select");
 add_role_select.change(function () {
     if (add_role_select.val() === "manager") {
@@ -308,6 +321,7 @@ add_role_select.change(function () {
         $("#add-worker-permission-form").hide();
     }
 });
+
 // 添加worker
 function addWorker() {
     let name = $("#add-worker-name-input").val();
@@ -366,6 +380,7 @@ function addWorker() {
         .catch(err => console.log(err))
 }
 
+// 修改用户权限
 function edictWorkerPermission() {
     let id =parseInt($("#chat-to-id-hide").html().toString());
     if (id === 0) {
@@ -418,8 +433,6 @@ function edictWorkerPermission() {
         .catch(error => console.log(error));
 
 }
-
-// 用户权限更改
 let worker_permission_role_select = $("#worker-permission-role-select");
 worker_permission_role_select.change(function () {
     if (worker_permission_role_select.val() === "manager") {
@@ -429,13 +442,35 @@ worker_permission_role_select.change(function () {
     }
 });
 
+//修改用户信息
 function edictWorkerInfo() {
+    let name = $("#updateName").val();
+    let gender = $("#updateGender").val();
 
+
+    let file = $('#upload-portrait-id').prop("files");
+    console.log(file);
+    let data = new FormData();
+    data.append('file',file[0]);
+
+    $.ajax({
+        type: METHOD_PUT,
+        url: "worker/info?uid=" + parseInt($("#worker-uid").html()) + "&name=" + name + "&gender=" + gender,
+        data: data,
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (result) {
+            console.log(result);
+            if (result.meta.status === 200) {
+                alert(result.data);
+            } else if (result.meta.status === 200) {
+                alert(result.data)
+            }
+        }
+    });
 }
 
-/**
- * 时间格式化工具
- */
 // 时间处理，与现在日期对比，返回显示的格式
 function dateFormat(date) {
 

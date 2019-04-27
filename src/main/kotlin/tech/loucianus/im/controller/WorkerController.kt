@@ -8,61 +8,46 @@ import org.apache.shiro.authz.annotation.RequiresRoles
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import tech.loucianus.im.model.JsonResponse
 import tech.loucianus.im.model.dao.WorkerStorer
 import tech.loucianus.im.model.dao.WorkerUpdater
 import tech.loucianus.im.service.WorkerService
 
 @RestController
-@RequestMapping()
+@RequestMapping("/worker")
 class WorkerController {
 
     @Autowired
     lateinit var workerService: WorkerService
 
-    /**
-     * Add a new user to database.
-     *
-     * @param workerStorer The details of user.
-     * @return If succeed to save user into database, return true; otherwise return false.
-     * @see WorkerService.setWorker
-     */
+    // 添加用户
     @RequiresRoles(value = ["manager"])
     @RequiresPermissions(value = ["update", "view"], logical = Logical.AND)
-    @PostMapping("/worker")
-    fun addOneWorker(@RequestBody @Validated workerStorer : WorkerStorer):JsonResponse {
+    @PostMapping
+    fun addWorker(@RequestBody @Validated workerStorer : WorkerStorer):JsonResponse {
 
         val result = workerService.setWorker(workerStorer)
 
         return JsonResponse.ok().message( result )
     }
 
-    /**
-     * Update the user's permission.
-     *
-     * @param workerUpdater The details of user.
-     * @return If succeed to update the user, return true; otherwise false.
-     * @see WorkerService.updateWorkerByAdmin
-     */
+    // 修改权限
     @RequiresRoles(value = ["manager"])
     @RequiresPermissions(value = ["update"])
-    @PostMapping("/worker/permission")
+    @PostMapping("/permission")
     fun updatePermission(@RequestBody workerUpdater: WorkerUpdater):JsonResponse {
 
-        val result = workerService.updateWorkerByAdmin(workerUpdater)
+        val result = workerService.updateWorkerPermission(workerUpdater)
 
         return JsonResponse.ok().message( result )
     }
 
-    /**
-     * Get all contacts.
-     *
-     * @return All contacts.
-     */
+    // 获取联系人
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["view"])
-    @GetMapping("/worker/contacts")
-    fun getAllContacts(): JsonResponse {
+    @GetMapping("/contacts")
+    fun getContacts(): JsonResponse {
 
         val email: String = SecurityUtils.getSubject().principal as String
 
@@ -71,19 +56,32 @@ class WorkerController {
         return JsonResponse.ok().message( result )
     }
 
-    /**
-     * Get the details of user.
-     *
-     * @param id The user id at database.
-     * @return Return the user details.
-     */
+    // 获取用户信息
     @RequiresRoles(value = ["worker", "manager"], logical =  Logical.OR)
     @RequiresPermissions(value = ["view"])
-    @GetMapping("/worker/info/{id}")
-    fun getOther(@PathVariable("id") id: Int): JsonResponse? {
+    @GetMapping("/info/{id}")
+    fun getUserInfo(@PathVariable("id") id: Int): JsonResponse {
 
         val result = workerService.getWorker(id)
 
         return JsonResponse.ok().message( result )
+    }
+
+    // 修改用户信息
+    @RequiresRoles(value = ["worker", "manager"], logical =  Logical.OR)
+    @RequiresPermissions(value = ["view"])
+    @PutMapping("/info")
+    fun updateUserInfo(@RequestParam("uid") uid: Int,
+                       @RequestParam("name") name: String,
+                       @RequestParam("gender") gender: String,
+                       @RequestParam("portrait") portrait: MultipartFile? = null): JsonResponse {
+
+        val result = workerService.updateWorkerInfo(uid, name, gender, portrait)
+
+        return if (result) {
+            JsonResponse.ok().message( "修改 $name 的信息成功." )
+        } else {
+            JsonResponse.internalServerError().message( "修改 $name 的信息失败，请稍后重试." )
+        }
     }
 }

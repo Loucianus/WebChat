@@ -1,6 +1,12 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
+
+    <meta CONTENT="no-cache" HTTP-EQUIV="pragma">
+    <meta CONTENT="no-store, must-revalidate" HTTP-EQUIV="Cache-Control">
+    <meta CONTENT="Wed, 26 Feb 1997 08:21:57 GMT" HTTP-EQUIV="expires">
+    <meta CONTENT="0" HTTP-EQUIV="expires">
+
     <meta charset="utf-8">
     <title>Web Chat</title>
     <link rel="icon" type="image/png" href="../static/favicon.png">
@@ -41,7 +47,9 @@
                     <div th:replace="fragment/panel :: chat_info"></div>
                     <!-- 聊天信息展示面板 -->
                     <div class="chat active-chat" data-chat="person">
-                        <div id="output" class="scroll scroll-chat"></div>
+                        <div id="message-body">
+<!--                            <div id="output" class="scroll scroll-chat"></div>-->
+                        </div>
                     </div>
 
                     <!-- 输入框 -->

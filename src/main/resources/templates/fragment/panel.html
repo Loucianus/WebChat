@@ -4,7 +4,7 @@
         <img id="u-pic" th:src="${worker.portrait}" src="" alt="..." class="rounded-circle " style="width: 40px; height: 40px;">
         &nbsp;&nbsp;&nbsp;<a class="dropdown-toggle" href="#" id="dropdownInfo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text="${worker.name}"></a>
 
-        <div class="dropdown-menu" aria-labelledby="dropdownInfo" >
+        <div class="dropdown-menu" aria-labelledby="dropdownInfo">
 
             <a id="worker-uid" style="display: none;" th:text="${worker.id}"></a>
             <a id="worker-name-hide" style="display: none;" th:text="${worker.name}"></a>
@@ -33,7 +33,7 @@
             </div>
 
             <div class="dropdown-divider"></div>
-            <button type="button" class="btn btn-danger dropdown-item " onclick="edictWorkerInfo()">修改资料</button>
+            <button type="button" class="btn btn-danger dropdown-item " data-toggle="modal" data-target="#edict-worker-info">修改资料</button>
             <div class="dropdown-divider"></div>
             <button type="button" class="btn btn-danger dropdown-item " onclick="outLanding()">注销</button>
             <script th:inline="javascript">
@@ -57,6 +57,60 @@
                         .catch(error => console.log(error))
                 }
             </script>
+        </div>
+<!--        修改资料-->
+        <div class="modal fade" id="edict-worker-info" tabindex="-1" role="dialog" aria-labelledby="edict-worker-info-title" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="edict-worker-info-title">修改资料</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="updatePortrait" enctype="multipart/form-data">
+                            <input id="upload-portrait-id" name="upload-file-id" type="file" class="form-control-file" style="display: none">
+                            <div class="form-group row" >
+                                <label for="updatePortrait" class="col-sm-2 col-form-label">头像</label>
+                                <div class="col-sm-10">
+                                    <img  th:src="${worker.portrait}" src="" alt="..." class="rounded-circle " style="max-width: 40px; height: 40px;">
+                                </div>
+                            </div>
+                        </form>
+                            <div class="dropdown-divider"></div>
+                            <div class="form-group row">
+                                <label for="updateEmail" class="col-sm-2 col-form-label">邮箱</label>
+                                <div class="col-sm-10">
+                                    <input id="updateEmail" type="text" readonly class="form-control-plaintext"  th:value="${worker.email}">
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="form-group row">
+                                <label for="updateName" class="col-sm-2 col-form-label">姓名</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="updateName" th:value="${worker.name}">
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label lead" for="updateGender">性别</label>
+                                <div class="col-sm-10">
+                                    <select class="custom-select" id="updateGender">
+                                        <option value="m" class="lead">男性</option>
+                                        <option value="f" class="lead">女性</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" onclick="edictWorkerInfo()">修改</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </form>
 </div>

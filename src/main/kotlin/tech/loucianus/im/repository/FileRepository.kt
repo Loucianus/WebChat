@@ -21,9 +21,6 @@ interface FileRepository {
     @Select("select * from file_list where filename like CONCAT('%',#{filename},'%') and ( to_id=#{uid} or to_id=0 or upload_worker=#{uid} )")
     fun findFileLikeFilename(@Param("filename") filename: String,@Param("uid") uid: Int): Page<FileList>
 
-    @Select("select filename from file where filepath=#{filepath}")
-    fun findFileByPath(@Param("filepath") filepath: String): String
-
     @Select("select * from file where filepath=#{filepath}")
     fun findFileByFullPath(@Param("filepath") filepath: String): File
 

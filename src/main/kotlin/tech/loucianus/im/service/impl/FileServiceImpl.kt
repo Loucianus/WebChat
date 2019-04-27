@@ -3,6 +3,7 @@ package tech.loucianus.im.service.impl
 import com.github.pagehelper.Page
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -25,9 +26,9 @@ class FileServiceImpl: FileService {
 
     companion object {
         private val log = LogFactory.getLog(this::class.java)
-
-        private const val localPath = "F:/files"
     }
+
+    @Value("\${web.file.path}") private lateinit var localPath: String;
 
     @Autowired @Lazy lateinit var fileRepository: FileRepository
 

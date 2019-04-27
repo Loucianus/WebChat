@@ -21,53 +21,21 @@ class ChatController {
 
     @Autowired private lateinit var chatService: ChatService
 
-    /**
-     * Send message to a body.
-     *
-     * @param message The message details, See data class [MessageGetter].
-     * @see ChatService.sentToUser The service of sending the message to a body.
-     */
+    // 私聊
     @MessageMapping("/private")
-    fun chat(@RequestBody @Validated message: MessageGetter): JsonResponse{
+    fun chat(@RequestBody @Validated message: MessageGetter) {
 
         chatService.sentToUser(message)
 
-        return JsonResponse.ok().message("Send!")
     }
 
-    /**
-     * Send group message
-     *
-     * @param message the message details, See [MessageGetter]
-     * @see ChatService
-     */
+    // 群聊
     @MessageMapping("/group")
     @SendTo("/topic/group")
-    fun chatWithGroup(@RequestBody @Validated message: MessageGetter): JsonResponse{
+    fun chatWithGroup(@RequestBody @Validated message: MessageGetter): JsonResponse {
 
-        chatService.sentToGroup(message)
+        val result = chatService.sentToGroup(message)
 
-        return JsonResponse.ok().message("Send!")
-    }
-
-    /**
-     * Get the last 10 messages.
-     *
-     * @param id The chat partner's id of the chatting.
-     * @param uid My id of the chatting.
-     * @return The message list of the last 10 messages.
-     */
-    @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
-    @GetMapping("/chatfile")
-    fun chatFile(@RequestParam("id")id: Int,@RequestParam("uid") uid: Int): JsonResponse {
-
-        val list =
-                if (id != 0) {
-                    chatService.getChatFile(id, uid)
-                } else {
-                    chatService.getGroupChatFile()
-                }
-
-        return JsonResponse.ok().message(list)
+        return JsonResponse.ok().message(result)
     }
 }

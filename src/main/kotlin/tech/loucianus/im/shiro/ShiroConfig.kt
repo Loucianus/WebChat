@@ -1,6 +1,5 @@
 package tech.loucianus.im.shiro
 
-import net.sf.ehcache.hibernate.EhCacheRegionFactory
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.apache.shiro.cache.ehcache.EhCacheManager
@@ -13,7 +12,6 @@ import org.apache.shiro.spring.LifecycleBeanPostProcessor
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.DependsOn
-import org.apache.shiro.mgt.DefaultSessionStorageEvaluator
 import org.apache.shiro.mgt.DefaultSubjectDAO
 
 @Configuration
@@ -48,9 +46,9 @@ class ShiroConfig {
         //使用自定义Realm
         manager.setRealm(customRealm())
 
-        val subjectDAO = DefaultSubjectDAO()
-
-        manager.subjectDAO = subjectDAO
+//        val subjectDAO = DefaultSubjectDAO()
+//
+//        manager.subjectDAO = subjectDAO
 
         manager.cacheManager = ehcacheManager()
 

@@ -96,24 +96,10 @@ class ChatServiceImpl: ChatService {
                 content = message.data,
                 type = message.type,
                 date = Timestamp(System.currentTimeMillis()),
-                name = message.name
+                name = message.name,
+                filename =  message.filename
         )
     }
 
-    override fun getChatFile(id: Int, uid: Int): List<Message> {
 
-        val messageList = messageRepository.findMessage(id, uid)
-
-        if (log.isInfoEnabled) log.info("messageList::$messageList")
-
-        return messageList
-    }
-
-    override fun getGroupChatFile(): List<GroupMessage> {
-        val messageList = messageRepository.findGroupMessage()
-
-        if (log.isInfoEnabled) log.info("messageList::$messageList")
-
-        return messageList
-    }
 }

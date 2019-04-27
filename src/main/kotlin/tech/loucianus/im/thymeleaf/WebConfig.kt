@@ -1,5 +1,6 @@
 package tech.loucianus.im.thymeleaf
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
@@ -23,6 +24,8 @@ import org.thymeleaf.templateresolver.ITemplateResolver
 @EnableWebMvc
 @ComponentScan("tech.loucianus.im.controller")
 class WebConfig: WebMvcConfigurer {
+
+    @Value("\${web.img.path}") private lateinit var imgPath: String
 
     /**
      * Configure view resolver. Set the Thymeleaf as default.
@@ -56,8 +59,8 @@ class WebConfig: WebMvcConfigurer {
      */
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         registry
-            .addResourceHandler("/static/**", "/static/img/**")
-            .addResourceLocations("classpath:/static/", "classpath:/static/img/")
+            .addResourceHandler("/static/**", "/images/**")
+            .addResourceLocations("classpath:/static/", imgPath)
     }
 
 }
