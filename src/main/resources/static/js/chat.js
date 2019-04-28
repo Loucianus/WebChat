@@ -207,8 +207,6 @@ function setContactList(data) {
 // 选择聊天对象
 function chatTO(data) {
 
-    // 清除聊天信息
-    // $("#output"+lastId + "").html("");
     // 设置聊天对象信息
     let chat_name =$("#chat-name-top");
     chat_name.html(data.name);
@@ -264,7 +262,6 @@ function getChatFile(id, uid) {
         })
         .catch(error => console.log(error));
 }
-
 
 // 发送文本信息
 function sendText () {
@@ -371,7 +368,20 @@ function getHistory() {
     $("#history").html("");
     let to_id = parseInt($("#chat-to-id-hide").html());
     let id = parseInt(uid.text().trim());
-    let url = "message/history?id=" + to_id + "&uid=" + id;
+
+    console.log("to id" + to_id);
+    console.log("uid" + id);
+
+    let search = $("#search-msg").val();
+
+    let url = "";
+    if (search === "") {
+        url = "message/history?id=" + to_id + "&uid=" + id;
+    } else if (typeof (search) === "undefined") {
+        url = "message/history?id=" + to_id + "&uid=" + id;
+    } else {
+        url = "message/history?id=" + to_id + "&uid=" + id + "&msg=" + search;
+    }
 
     const general = {
         headers: HEADERS_JSON,
@@ -381,15 +391,16 @@ function getHistory() {
     fetch(url, general)
         .then(response => { return response.json() })
         .then(function (result) {
-            console.log("file get::" + result.meta.status);
             if (result.meta.status === 200) {
-
-                for (let i = 0; i < result.data.length; i++) {
-                    // console.log("result:" + JSON.stringify(result.data[i]));
-                    showHistoryContent(JSON.stringify(result.data[i]), id);
+                let messageList = result.data.list;
+                console.log(JSON.stringify(result.data));
+                for (let i = 0; i < messageList.length; i++) {
+                    showHistoryContent(JSON.stringify(messageList[i]), id);
                 }
+                setMessageNav(result.data, "")
             } else if (result.meta.status === 400) {
-                console.log("Had not chatted with him.")
+                console.log("Had not chatted with him.");
+                alert("你还没和TA有过通讯.")
             }
         })
         .catch(error => console.log(error));
@@ -401,8 +412,6 @@ function showHistoryContent(message, uid) {
     let msg = JSON.parse(message);
     /** @namespace msg.fromId */
     if (msg.fromId === uid){
-        // $('#output').append("<div class='bubble me'>" + msg.content + "</div>");
-
         if (msg.type === "s") {
             $("#history").append(
                 "<div class='bubble me'>" + msg.content + "</div>"
@@ -419,7 +428,6 @@ function showHistoryContent(message, uid) {
             $('#history').append("<div class='bubble you'>" +"[" + msg.name + "]:    " +msg.content + "</div>")
 
         } else {
-            // $('#output').append("<div class='bubble you'>" + msg.content + "</div>");
             if (msg.type === "s") {
                 $("#history").append(
                     "<div class='bubble you'>" + msg.content + "</div>"
@@ -431,4 +439,62 @@ function showHistoryContent(message, uid) {
             }
         }
     }
+}
+
+// 历史记录的的翻页
+function setMessageNav(data,msg) {
+    console.log("历史消息翻页::data" + JSON.stringify(data));
+
+    let html = "";
+    /** @namespace data.prePage */
+    if (data.prePage > 0) {
+        html += "<li id='prePage' class='page-item'><a class='page-link' onclick='jumpMsg("+ data.prePage+ "," + msg + ")'>Previous</a></li>";
+    }
+
+    /** @namespace data.pageNum */
+    html += "<li class='page-item'><a class='page-link'>" + parseInt(data.pageNum)  + "</a></li>";
+
+    /** @namespace data.nextPage */
+    /** @namespace data.navigatePages */
+    if (parseInt(data.nextPage) !== 0) {
+        html += "<li id='nextPage' class='page-item'><a class='page-link' onclick='jumpMsg(" + data.nextPage +"," + msg + ")'>Next</a></li>";
+    }
+
+    $("#msg-nav").html( html );
+}
+// 文件页面的跳转
+function jumpMsg(data, msg,) {
+
+    let to_id = parseInt($("#chat-to-id-hide").html());
+    let id = parseInt(uid.text().trim());
+
+
+    let url = "";
+    if (msg === "") {
+        url = "message/history?id=" + to_id + "&uid=" + id+ "&pageNo=" + data;
+    } else if (typeof (msg) === "undefined") {
+        url = "message/history?id=" + to_id + "&uid=" + id+ "&pageNo=" + data;
+    } else {
+        url = "message/history?id=" + to_id + "&uid=" + id + "&msg=" + msg+ "&pageNo=" + data;
+    }
+
+
+
+
+    const general = {
+        headers: HEADERS_JSON,
+        method: METHOD_GET
+    };
+    $("#history").html("");
+    fetch(url, general)
+        .then(response => { return response.json() })
+        .then(function (result) {
+            let messageList = result.data.list;
+            for (let i = 0; i < messageList.length; i++) {
+                showHistoryContent(JSON.stringify(messageList[i]), id);
+            }
+            setMessageNav(result.data, msg)
+        })
+        .catch(error => console.log(error));
+
 }

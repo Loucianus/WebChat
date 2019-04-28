@@ -29,8 +29,6 @@ class ApplicationTest {
 
     @Test
     fun contextLoads(){
-        if (log.isInfoEnabled)
-            log.info("message::" + messageRepository.findMessageByMsg(1,2,"1"))
     }
 
     @Test

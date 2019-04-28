@@ -29,8 +29,13 @@ function viewFile() {
     fetch(url, general)
         .then(response => { return response.json() })
         .then(function (result) {
-            setFileList(result.data);
-            setFileNav(result.data, "");
+            if (result.data.total !== 0) {
+                setFileList(result.data);
+                setFileNav(result.data, "")
+            } else if (result.data.total === 0) {
+                $("#file-list").html(  "" );
+                alert("没有搜索到相关文件")
+            }
         })
         .catch(error => console.log(error));
 
@@ -75,33 +80,68 @@ function setFileList(data) {
 // 文件的翻页
 function setFileNav(data,filename) {
 
-    console.log("nav pre:" + data.prePage);
-    console.log("nav next:" + data.nextPage);
+    console.log("翻页::filename::"+filename);
 
-    let html = "";
-    /** @namespace data.prePage */
-    if (data.prePage > 0) {
-        html += "<li id='prePage' class='page-item'><a class='page-link' onclick='jump("+ data.prePage+ "," + filename + ")'>Previous</a></li>";
+    if (typeof (filename) === "undefined") {
+        let html = "";
+        /** @namespace data.prePage */
+        if (data.prePage > 0) {
+            html += "<li id='prePage' class='page-item'><a class='page-link' onclick='jump("+ data.prePage+ "," + '' + ")'>Previous</a></li>";
+        }
+
+        /** @namespace data.pageNum */
+        html += "<li class='page-item'><a class='page-link'>" + data.pageNum  + "</a></li>";
+
+        /** @namespace data.nextPage */
+        /** @namespace data.navigatePages */
+        if (parseInt(data.nextPage) !== 0) {
+            html += "<li id='nextPage' class='page-item'><a class='page-link' onclick='jump(" + data.nextPage +"," + '' + ")'>Next</a></li>";
+        }
+
+        $("#file-nav").html( html );
+    } else {
+        let html = "";
+        /** @namespace data.prePage */
+        if (data.prePage > 0) {
+            html += "<li id='prePage' class='page-item'><a class='page-link' onclick='jump("+ data.prePage+ "," + filename + ")'>Previous</a></li>";
+        }
+
+        /** @namespace data.pageNum */
+        html += "<li class='page-item'><a class='page-link'>" + data.pageNum  + "</a></li>";
+
+        /** @namespace data.nextPage */
+        /** @namespace data.navigatePages */
+        if (parseInt(data.nextPage) !== 0) {
+            html += "<li id='nextPage' class='page-item'><a class='page-link' onclick='jump(" + data.nextPage +"," + filename + ")'>Next</a></li>";
+        }
+
+        $("#file-nav").html( html );
     }
 
-    /** @namespace data.pageNum */
-    html += "<li class='page-item'><a class='page-link'>" + data.pageNum  + "</a></li>";
 
-    /** @namespace data.nextPage */
-    /** @namespace data.navigatePages */
-    if (parseInt(data.nextPage) !== 0) {
-        html += "<li id='nextPage' class='page-item'><a class='page-link' onclick='jump(" + data.nextPage +"," + filename + ")'>Next</a></li>";
-    }
-
-    $("#file-nav").html( html );
 }
 // 文件页面的跳转
 function jump(data, filename) {
 
-    if (data.prePage === 0 || data.nextPage === data.navigatePages + 1) {
-        return '';
-    } else {
+    console.log("jump::"+data);
+    console.log("跳转::filename::"+filename);
+    if (typeof (filename) === "undefined") {
+        const url = "/file/all/" + parseInt($("#worker-uid").html()) + "?pageNo=" + data;
 
+        const general = {
+            headers: HEADERS_JSON,
+            method: METHOD_GET
+        };
+
+        fetch(url, general)
+            .then(response => { return response.json() })
+            .then(function (result) {
+                setFileList(result.data);
+                setFileNav(result.data, filename)
+            })
+            .catch(error => console.log(error));
+
+    } else {
         const url = "/file/all/" + parseInt($("#worker-uid").html()) + "?pageNo=" + data + "&filename=" + filename;
 
         const general = {
@@ -113,10 +153,12 @@ function jump(data, filename) {
             .then(response => { return response.json() })
             .then(function (result) {
                 setFileList(result.data);
-                setFileNav(result.data)
+                setFileNav(result.data, filename)
             })
             .catch(error => console.log(error));
+
     }
+
 }
 // 文件的下载
 function downloadFile(fid) {
@@ -195,8 +237,14 @@ function searchFile() {
     fetch(url, general)
         .then(response => { return response.json() })
         .then(function (result) {
-            setFileList(result.data);
-            setFileNav(result.data, search);
+            console.log("result::" + JSON.stringify(result));
+            if (result.data.total !== 0) {
+                setFileList(result.data);
+                setFileNav(result.data, search)
+            } else if (result.data.total === 0) {
+                $("#file-list").html(  "" );
+                alert("没有搜索到相关文件")
+            }
         })
         .catch(error => console.log(error));
 }

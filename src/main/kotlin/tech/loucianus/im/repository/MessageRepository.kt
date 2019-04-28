@@ -16,19 +16,15 @@ interface MessageRepository {
     @Select("select * from group_msg where is_read='f' order by date desc")
     fun findGroupMessage(): List<GroupMessage>
 
-    @Select("select * from message where (from_id =#{id} and to_id=#{uid}) or (from_id =#{uid} and to_id =#{id})")
-    fun findHistoryMessage(@Param("id") id: Int,@Param("uid") uid: Int): List<Message>
-
-    @Select("select * from message where to_id=0")
-    fun findGroupHistoryMessage(): List<Message>
+    @Select("select * from message " +
+            "where ((from_id =#{id} and to_id=#{uid}) or (from_id =#{uid} and to_id =#{id})) " +
+            "and ((content like CONCAT('%',#{msg},'%') and type = 's') or (filename like CONCAT('%',#{msg},'%') and type = 'f'))")
+    fun findHistoryMessage(@Param("id") id: Int,@Param("uid") uid: Int, @Param("msg") msg: String): Page<Message>
 
     @Select("select * from message " +
-            "where (" +
-                "(from_id =#{id} and to_id=#{uid}) or " +
-                "(from_id =#{uid} and to_id =#{id})" +
-            ") " +
-            "and content like CONCAT('%',#{msg},'%')")
-    fun findMessageByMsg(@Param("id")id: Int, @Param("uid") uid: Int, @Param("msg")msg: String): Page<Message>
+            "where to_id=0 "+
+            "and (content like CONCAT('%',#{msg},'%'))")
+    fun findGroupHistoryMessage(@Param("msg") msg: String): Page<Message>
 
     @Insert("insert into message (id, from_id, to_id, content, type, date, target, filename) " +
             "values (#{id}, #{fromId}, #{toId}, #{content}, #{type}, #{date}, #{target}, #{filename})")

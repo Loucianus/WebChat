@@ -1,13 +1,14 @@
 package tech.loucianus.im.service
 
+import com.github.pagehelper.Page
 import tech.loucianus.im.model.dao.GroupMessage
 import tech.loucianus.im.model.po.Message
 
 interface MessageService {
 
-    fun getHistoryMessage(id: Int, uid:Int): List<Message>
+    fun getHistoryMessage(id: Int, uid:Int, msg: String): Page<Message>
 
-    fun getGroupHistoryMessage(): List<Message>
+    fun getGroupHistoryMessage(msg: String): Page<Message>
 
     fun getChatFile(id :Int, uid: Int): List<Message>
 

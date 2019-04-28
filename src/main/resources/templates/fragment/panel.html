@@ -148,10 +148,17 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <div class="form-inline">
+                        <input id="search-msg" class="form-control" type="text" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success" type="button" onclick="getHistory()">查询</button>
+                    </div>
                     <!-- 聊天信息展示面板 -->
                     <div class="chat active-chat" data-chat="person" style="padding-bottom: 0">
                         <div id="history" class="scroll scroll-chat"></div>
                     </div>
+                    <nav aria-label="file navigation">
+                        <ul id="msg-nav" class="pagination justify-content-center"></ul>
+                    </nav>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>

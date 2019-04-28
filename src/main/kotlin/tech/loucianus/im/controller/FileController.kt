@@ -22,6 +22,7 @@ class FileController {
 
     @Autowired @Lazy lateinit var fileService: FileService
 
+    // 搜索文件
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["view"])
     @GetMapping("/all/{uid}")
@@ -36,10 +37,11 @@ class FileController {
         return JsonResponse.ok().message(pageInfo)
     }
 
+    // 上传文件
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["upload", "view"], logical = Logical.AND)
     @PostMapping
-    fun uploadFile(@RequestParam("file") file: MultipartFile?,
+    fun upload(@RequestParam("file") file: MultipartFile?,
                    @RequestParam("uploader_id") uid: Int,
                    @RequestParam("to_id") toId: Int): JsonResponse {
 
@@ -50,6 +52,7 @@ class FileController {
         return JsonResponse.ok().message(fileService.upload(file, uid, toId))
     }
 
+    // 下载文件
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["download", "view"])
     @GetMapping
@@ -61,10 +64,11 @@ class FileController {
         fileService.download(request, response, fileId)
     }
 
+    // 删除文件
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["view", "delete"], logical = Logical.OR)
     @DeleteMapping
-    fun deleteFile(@RequestParam("file_id") id: Int): JsonResponse {
+    fun delete(@RequestParam("file_id") id: Int): JsonResponse {
 
         val subject = SecurityUtils.getSubject()
 
