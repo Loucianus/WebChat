@@ -14,6 +14,7 @@ import org.apache.shiro.authz.annotation.Logical
 import org.apache.shiro.authz.annotation.RequiresPermissions
 import org.apache.shiro.authz.annotation.RequiresRoles
 import org.springframework.beans.factory.annotation.Autowired
+import tech.loucianus.im.model.dao.UpdatePwd
 import tech.loucianus.im.service.WorkerService
 
 @RestController
@@ -27,8 +28,9 @@ class TokenController {
     @Autowired lateinit var workerService: WorkerService
 
     @PostMapping(consumes = ["application/json"], produces = ["application/json"])
-    fun login(@RequestBody @Validated account: Account,
-              errors: Errors): JsonResponse {
+    fun login(
+            @RequestBody @Validated account: Account,
+            errors: Errors): JsonResponse {
 
         if (log.isInfoEnabled) log.info("Landing:${account.username}")
 
@@ -57,5 +59,21 @@ class TokenController {
         SecurityUtils.getSubject().logout()
 
         return JsonResponse.ok().message("Logout.")
+    }
+
+    @PutMapping
+    fun updatePassword(
+            @RequestBody @Validated updatePwd: UpdatePwd,
+            errors: Errors): JsonResponse {
+        return if (!errors.hasErrors()) {
+            val result = workerService.updatePwd(updatePwd)
+            if (result) {
+                JsonResponse.ok().message("修改密码成功!!")
+            } else {
+                JsonResponse.internalServerError().message("修改密码失败,请稍后重试!")
+            }
+        } else {
+            throw CustomNotFoundException("Account error.(Username or Password Invalid.)")
+        }
     }
 }

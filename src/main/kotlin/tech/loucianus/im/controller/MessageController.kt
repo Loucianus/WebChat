@@ -52,9 +52,9 @@ class MessageController {
 
         val list =
                 if (id != 0) {
-                    messageService.getChatFile(id, uid)
+                    messageService.getRecentFile(id, uid)
                 } else {
-                    messageService.getGroupChatFile()
+                    messageService.getGroupRecentFile()
                 }
 
         return JsonResponse.ok().message(list)

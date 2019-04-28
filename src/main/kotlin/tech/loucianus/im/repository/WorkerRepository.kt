@@ -36,13 +36,16 @@ interface WorkerRepository {
             "asc")
     fun findContactsByEmail(@Param("email") email: String): List<Contacts>
 
+    @Select("select id_card from worker where email=#{email}")
+    fun findIdCardByEmail(@Param("email") email: String): String?
+
     @Select("select role, permission " +
             "from worker " +
             "where email=#{email}")
     fun getAuthority(@Param("email") email: String): Permission
 
-    @Insert("insert into worker (email, name, role, permission, gender) " +
-            "values (#{email}, #{name}, #{role}, #{permission}, #{gender})")
+    @Insert("insert into worker (email, name, role, permission, gender, id_card) " +
+            "values (#{email}, #{name}, #{role}, #{permission}, #{gender}, #{idCard})")
     fun saveWorker(workerStorer: WorkerStorer): Int
 
     @Update("update worker set role=#{role}, permission=#{permission}, status=#{status} " +
@@ -54,4 +57,7 @@ interface WorkerRepository {
                          @Param("name") name: String,
                          @Param("gender") gender: String,
                          @Param("portrait") portrait: String): Int
+
+    @Update("update worker set password=#{password} where email=#{email}")
+    fun updatePwd(@Param("password")password: String,@Param("email") email: String): Int
 }

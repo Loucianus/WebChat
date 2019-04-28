@@ -10,9 +10,9 @@ interface MessageService {
 
     fun getGroupHistoryMessage(msg: String): Page<Message>
 
-    fun getChatFile(id :Int, uid: Int): List<Message>
+    fun getRecentFile(id :Int, uid: Int): List<Message>
 
-    fun getGroupChatFile(): List<GroupMessage>
+    fun getGroupRecentFile(): List<GroupMessage>
 
     fun actMessage(uid: Int, id: Int): Int
 }

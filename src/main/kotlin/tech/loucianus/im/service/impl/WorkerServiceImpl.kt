@@ -5,15 +5,17 @@ import org.jasypt.encryption.StringEncryptor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.CacheConfig
+import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import tech.loucianus.im.exception.CustomInternalException
 import tech.loucianus.im.exception.CustomNotFoundException
 import tech.loucianus.im.model.vo.Contacts
 import tech.loucianus.im.model.dao.Permission
+import tech.loucianus.im.model.dao.UpdatePwd
 import tech.loucianus.im.model.dao.WorkerStorer
 import tech.loucianus.im.model.dao.WorkerUpdater
-import tech.loucianus.im.model.po.File
 import tech.loucianus.im.model.po.Worker
 import tech.loucianus.im.repository.WorkerRepository
 import tech.loucianus.im.service.WorkerService
@@ -48,14 +50,31 @@ class WorkerServiceImpl: WorkerService {
         }
     }
 
+    override fun updatePwd(updatePwd: UpdatePwd): Boolean {
+        val idCard = workerRepository.findIdCardByEmail(updatePwd.email)
+        idCard?.let {
+
+            if (it == updatePwd.idCard) {
+                return workerRepository.updatePwd(
+                        cipher.encrypt(updatePwd.password),
+                        updatePwd.email
+                ) == 1
+            } else{
+                throw CustomNotFoundException("请确认身份证号与邮箱是否填写正确!")
+            }
+        }
+        throw CustomNotFoundException("请确认身份证号与邮箱是否填写正确!")
+    }
+
     override fun setWorker(workerStorer: WorkerStorer): Boolean {
         return if (workerStorer.permission == "") {
             workerRepository.saveWorker(
                 WorkerStorer(
-                    email = workerStorer.email,
-                    name = workerStorer.name,
-                    role = workerStorer.role,
-                    gender = workerStorer.gender)
+                        email = workerStorer.email,
+                        name = workerStorer.name,
+                        role = workerStorer.role,
+                        gender = workerStorer.gender,
+                        idCard = workerStorer.idCard)
             ) == 1
         } else {
             workerRepository.saveWorker(workerStorer) == 1
@@ -65,15 +84,19 @@ class WorkerServiceImpl: WorkerService {
     override fun updateWorkerPermission(workerUpdater: WorkerUpdater): Boolean {
         if (getWorker(workerUpdater.id).permission == "view#edict#download#upload#update#delete")
             return false
+        val worker = workerRepository.findWorkerById(workerUpdater.id)
 
         return if (workerUpdater.permission == "") {
-            workerRepository.updateWorkerPermission(
+
+            updatePermission(
+                    worker.email,
                     WorkerUpdater(id = workerUpdater.id,
-                            status = workerUpdater.status,
-                            role = workerUpdater.role)
-            ) == 1
+                    status = workerUpdater.status,
+                    role = workerUpdater.role))
+            true
         } else {
-            workerRepository.updateWorkerPermission(workerUpdater) == 1
+            updatePermission(worker.email, workerUpdater)
+            true
         }
     }
 
@@ -81,7 +104,8 @@ class WorkerServiceImpl: WorkerService {
 
         return if (portrait == null) {
             val imgPath = workerRepository.findWorkerById(uid).portrait
-            workerRepository.updateWorkerInfo(uid, name, gender, imgPath) == 1
+            updateWorker(uid, name, gender, imgPath)
+            true
         } else {
             if (portrait.originalFilename == null) {
                 throw CustomNotFoundException("File not exits!!")
@@ -89,11 +113,25 @@ class WorkerServiceImpl: WorkerService {
 
             val filename = FileUtil.getNewFileName(portrait.originalFilename!!)
             val suffix = FileUtil.getSuffix(filename)
+            if (suffix != "png" || suffix != "jpg" || suffix  != "jpeg") {
+                 throw CustomInternalException("目前只支持png,jpg与jpeg格式的图片!!")
+            }
             return if (FileUtil.upload(portrait, localPath, "$uid.$suffix")) {
-                workerRepository.updateWorkerInfo(uid, name, gender, "images/$filename") == 1
+                updateWorker(uid, name, gender, "images/$filename")
+                true
             } else {
                 false
             }
+        }
+    }
+
+    @CachePut(key = "#uid")
+    override fun updateWorker(uid: Int, name: String, gender: String, portrait: String): Worker {
+        val result = workerRepository.updateWorkerInfo(uid, name, gender, portrait)
+        return if (result == 1) {
+            workerRepository.findWorkerById(uid)
+        } else {
+            throw CustomInternalException("缓存用户信息失败")
         }
     }
     
@@ -125,4 +163,21 @@ class WorkerServiceImpl: WorkerService {
     override fun getAuthority(email: String): Permission {
         return workerRepository.getAuthority(email)
     }
+
+    @CachePut(cacheNames = ["authority"], key = "#email")
+    override fun updatePermission(email: String, workerUpdater: WorkerUpdater): Permission {
+        val result = workerRepository.updateWorkerPermission(
+                WorkerUpdater(id = workerUpdater.id,
+                        status = workerUpdater.status,
+                        role = workerUpdater.role)
+        )
+
+        return if (result == 1) {
+            workerRepository.getAuthority(email)
+        } else {
+            throw CustomInternalException("缓存用户权限失败")
+        }
+    }
+
+
 }

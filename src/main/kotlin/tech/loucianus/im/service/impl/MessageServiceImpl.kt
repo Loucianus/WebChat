@@ -19,23 +19,39 @@ class MessageServiceImpl: MessageService {
     @Autowired lateinit var messageRepository: MessageRepository
 
     override fun getHistoryMessage(id: Int, uid:Int, msg: String): Page<Message> {
+
+        if (log.isInfoEnabled) {
+            log.info("Get History Message")
+        }
+
         return messageRepository.findHistoryMessage(id, uid, msg)
     }
 
     override fun getGroupHistoryMessage(msg: String): Page<Message> {
+
+        if (log.isInfoEnabled) {
+            log.info("Get Group History Message")
+        }
+
         return messageRepository.findGroupHistoryMessage(msg)
     }
 
-    override fun getChatFile(id: Int, uid: Int): List<Message> {
+    override fun getRecentFile(id: Int, uid: Int): List<Message> {
+
+        if (log.isInfoEnabled) {
+            log.info("Get Chat File")
+        }
 
         val messageList = messageRepository.findMessage(id, uid)
 
-        if (log.isInfoEnabled) log.info("messageList::$messageList")
+        if (log.isInfoEnabled) {
+            log.info("messageList::$messageList")
+        }
 
         return messageList
     }
 
-    override fun getGroupChatFile(): List<GroupMessage> {
+    override fun getGroupRecentFile(): List<GroupMessage> {
         val messageList = messageRepository.findGroupMessage()
 
         if (log.isInfoEnabled) log.info("messageList::$messageList")

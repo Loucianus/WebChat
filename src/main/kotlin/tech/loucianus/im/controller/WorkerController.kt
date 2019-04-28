@@ -18,8 +18,11 @@ import tech.loucianus.im.service.WorkerService
 @RequestMapping("/worker")
 class WorkerController {
 
-    @Autowired
-    lateinit var workerService: WorkerService
+    companion object {
+        private val log = LogFactory.getLog(this::class.java)
+    }
+
+    @Autowired lateinit var workerService: WorkerService
 
     // 添加用户
     @RequiresRoles(value = ["manager"])
@@ -74,7 +77,10 @@ class WorkerController {
     fun updateUserInfo(@RequestParam("uid") uid: Int,
                        @RequestParam("name") name: String,
                        @RequestParam("gender") gender: String,
-                       @RequestParam("portrait") portrait: MultipartFile? = null): JsonResponse {
+                       @RequestParam(value = "portrait") portrait: MultipartFile?): JsonResponse {
+        if (log.isInfoEnabled) {
+            log.info("portrait$portrait")
+        }
 
         val result = workerService.updateWorkerInfo(uid, name, gender, portrait)
 

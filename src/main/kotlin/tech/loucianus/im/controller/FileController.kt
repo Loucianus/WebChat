@@ -41,9 +41,10 @@ class FileController {
     @RequiresRoles(value = ["worker", "manager"],logical =  Logical.OR)
     @RequiresPermissions(value = ["upload", "view"], logical = Logical.AND)
     @PostMapping
-    fun upload(@RequestParam("file") file: MultipartFile?,
-                   @RequestParam("uploader_id") uid: Int,
-                   @RequestParam("to_id") toId: Int): JsonResponse {
+    fun upload(
+            @RequestParam("file") file: MultipartFile?,
+            @RequestParam("uploader_id") uid: Int,
+            @RequestParam("to_id") toId: Int): JsonResponse {
 
         if (file == null) {
             return JsonResponse.methodNotAllowed().message("上传的文件不存在!!!")

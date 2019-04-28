@@ -47,6 +47,11 @@ data class Worker (
     /**
      * permission: view | edict | download | upload
      */
-    val permission: String
+    val permission: String,
+
+    /**
+     * IdCard
+     */
+    val idCard: String
 
 ) : Serializable

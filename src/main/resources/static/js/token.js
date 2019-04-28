@@ -1,3 +1,11 @@
+const METHOD_GET = "GET";
+const METHOD_POST = "POST";
+const METHOD_DELETE = "DELETE";
+const METHOD_PUT = "PUT";
+const HEADERS_JSON = new Headers({
+    "Content-Type":"application/json;charset=UTF-8"
+});
+
 /** @namespace result.meta */
 let password_flag, username_flag = false;
 

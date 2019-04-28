@@ -1,9 +1,6 @@
 const role = $("#worker-role-hide").html().toString();
 const permission = $("#worker-permission-hide").html().toString();
 
-/**
- * Const
- */
 const METHOD_GET = "GET";
 const METHOD_POST = "POST";
 const METHOD_DELETE = "DELETE";
@@ -374,6 +371,7 @@ add_role_select.change(function () {
 function addWorker() {
     let name = $("#add-worker-name-input").val();
     let email = $("#add-worker-email-input").val();
+    let idCard = $("#add-worker-IDCard-input").val();
     let gender = $("#add-worker-gender-select").val();
     let role = add_role_select.val();
     let _permission = $("#add-worker-permission-select").val();
@@ -392,7 +390,8 @@ function addWorker() {
             "email" : email,
             "role" : role,
             "permission" : _permission,
-            "gender": gender
+            "gender": gender,
+            "idCard": idCard
         };
     } else if (role === "worker") {
         body = {
@@ -400,7 +399,8 @@ function addWorker() {
             "email" : email,
             "role" : role,
             "gender": gender,
-            "permission": ""
+            "permission": "",
+            "idCard": idCard
         };
     }
 
@@ -497,9 +497,12 @@ function edictWorkerInfo() {
 
 
     let file = $('#upload-portrait-id').prop("files");
-    console.log(file);
+
     let data = new FormData();
     data.append('file',file[0]);
+
+    console.log(file);
+    console.log(data);
 
     $.ajax({
         type: METHOD_PUT,
@@ -512,7 +515,7 @@ function edictWorkerInfo() {
             console.log(result);
             if (result.meta.status === 200) {
                 alert(result.data);
-            } else if (result.meta.status === 200) {
+            } else if (result.meta.status === 500) {
                 alert(result.data)
             }
         }

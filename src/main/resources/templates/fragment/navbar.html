@@ -167,21 +167,27 @@
                 <div class="modal-body">
 
                     <div class="form-group row">
-                        <label for="add-worker-name-input" class="col-sm-2 col-form-label lead">姓名</label>
-                        <div class="col-sm-10">
+                        <label for="add-worker-name-input" class="col-sm-3 col-form-label lead">姓名</label>
+                        <div class="col-sm-19">
                             <input type="text" class="form-control lead" id="add-worker-name-input" placeholder="Example : Tom White" minlength="1" maxlength="15">
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="add-worker-email-input" class="col-sm-2 col-form-label lead" >邮箱</label>
-                        <div class="col-sm-10">
+                        <label for="add-worker-email-input" class="col-sm-3 col-form-label lead" >邮箱</label>
+                        <div class="col-sm-9">
                             <input type="email" class="form-control lead" id="add-worker-email-input" placeholder="Example : example@citrine.studio">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="add-worker-IDCard-input" class="col-sm-3 col-form-label lead" >身份证号</label>
+                        <div class="col-sm-9">
+                            <input type="email" class="form-control lead" id="add-worker-IDCard-input" placeholder="Example : 1111222233334444555566">
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-sm-2 col-form-label lead" for="add-worker-gender-select">性别</label>
-                        <div class="col-sm-10">
+                        <label class="col-sm-3 col-form-label lead" for="add-worker-gender-select">性别</label>
+                        <div class="col-sm-9">
                             <select class="custom-select" id="add-worker-gender-select">
                                 <option value="m" class="lead" selected>男性</option>
                                 <option value="f" class="lead">女性</option>
@@ -190,8 +196,8 @@
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-sm-2 col-form-label lead" for="add-worker-role-select">角色</label>
-                        <div class="col-sm-10">
+                        <label class="col-sm-3 col-form-label lead" for="add-worker-role-select">角色</label>
+                        <div class="col-sm-9">
                             <select class="custom-select" id="add-worker-role-select">
                                 <option value="worker" class="lead" selected>员工</option>
                                 <option value="manager" class="lead">管理员</option>
@@ -200,8 +206,8 @@
                     </div>
 
                     <div id="add-worker-permission-form" class="form-group row" style="display: none">
-                        <label class="col-sm-2 col-form-label lead" for="add-worker-permission-select">权限</label>
-                        <div class="col-sm-10">
+                        <label class="col-sm-3 col-form-label lead" for="add-worker-permission-select">权限</label>
+                        <div class="col-sm-9">
                             <select class="custom-select" id="add-worker-permission-select">
                                 <option value="view#edict#download#upload#update" class="lead" selected>普通管理员</option>
                                 <option value="view#edict#download#upload#update#delete" class="lead">超级管理员</option>

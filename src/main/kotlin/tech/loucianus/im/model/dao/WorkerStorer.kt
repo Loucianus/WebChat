@@ -35,6 +35,9 @@ data class WorkerStorer (
     /**
      * permission: view | edict | download | upload
      */
-    val permission: String = "view#edict#download#upload"
+    val permission: String = "view#edict#download#upload",
+
+    @field: NotBlank(message = "{idCard.required}")
+    val idCard: String
 
 ) : Serializable
