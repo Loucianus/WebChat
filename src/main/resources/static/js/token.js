@@ -1,7 +1,5 @@
-const METHOD_GET = "GET";
 const METHOD_POST = "POST";
-const METHOD_DELETE = "DELETE";
-const METHOD_PUT = "PUT";
+
 const HEADERS_JSON = new Headers({
     "Content-Type":"application/json;charset=UTF-8"
 });
@@ -16,13 +14,13 @@ function bindUsername() {
     const submit = $("#submit");
     if (!username_reg.test(username.val())){
         username.attr("class", "form-control is-invalid");
-        // $("#usernameHelpBlock").show();
+        $("#usernameHelpBlock").show();
         username.attr("required");
         username_flag = false
     }
     else {
         username.attr("class", "form-control is-valid");
-        // $("#usernameHelpBlock").hide();
+        $("#usernameHelpBlock").hide();
         username.removeAttr("required");
         username_flag = true
     }
@@ -40,11 +38,11 @@ function bindPassword() {
     const submit = $("#submit");
     if (password.val() === "" || password.val().length < 8 || password.val().length > 20) {
         password.attr("class", "form-control is-invalid");
-        // $("#passwordHelpBlock").show();
+        $("#passwordHelpBlock").show();
         password_flag = false
     } else {
         password.attr("class", "form-control is-valid");
-        // $("#passwordHelpBlock").hide();
+        $("#passwordHelpBlock").hide();
         password_flag = true
     }
     if (username_flag === true && password_flag === true) {
@@ -58,6 +56,14 @@ function bindPassword() {
 function submitFormLogin() {
 
     const url = "token";
+
+    if ($("#InputEmail").val() === "" ) {
+        alert("请输入邮箱!!");
+        $("#InputEmail").focus()
+    } else if ($("#InputPassword").val() === "") {
+        alert("请输入密码!!");
+        $("#InputPassword").focus()
+    }
 
     const data = {
         "username": $("#InputEmail").val(),
